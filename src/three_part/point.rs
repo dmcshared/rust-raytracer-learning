@@ -107,6 +107,23 @@ pub mod point {
         }
 
         #[test]
+        fn can_add_point_and_point() {
+            let point1 = Point::new(5., -2., 8.);
+            let point2 = Point::new(-9., 2., 5.);
+
+            let Point(out) = point2 + (point1 - Point::origin());
+            assert_eq!(
+                out,
+                ThreePart {
+                    x: -4.,
+                    y: 0.,
+                    z: 13.,
+                    w: 1.
+                }
+            );
+        }
+
+        #[test]
         fn can_sub_point_and_vector() {
             let point = Point::new(4., -7., 3.);
             let vector = Vector::new(-8., 6., 0.);

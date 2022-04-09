@@ -53,45 +53,142 @@ pub mod vector {
             Vector::new(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs)
         }
     }
+    impl ops::Neg for Vector {
+        type Output = Vector;
+
+        fn neg(self) -> Self::Output {
+            let Vector(lhs) = self;
+            Vector::new(lhs.x, lhs.y, lhs.z)
+        }
+    }
 
     #[cfg(test)]
     mod tests {
+        use super::{ThreePart, Vector};
 
-        fn check_w_is_zero(three_part: super::ThreePart) {
+        fn check_w_is_zero(three_part: ThreePart) {
             assert_eq!(three_part.w, 0.0);
         }
 
         #[test]
         fn can_be_created_direct() {
-            let vector = super::Vector(super::ThreePart {
+            let vector = Vector(ThreePart {
                 x: 4.3,
                 y: -4.2,
                 z: 3.1,
-                w: 1.0,
+                w: 0.0,
             });
-            let super::Vector(three_part) = vector;
-            assert_eq!(three_part.x, 4.3);
-            assert_eq!(three_part.y, -4.2);
-            assert_eq!(three_part.z, 3.1);
-            check_w_is_zero(three_part);
+            let Vector(three_part) = vector;
+
+            assert_eq!(
+                three_part,
+                ThreePart {
+                    x: 4.3,
+                    y: -4.2,
+                    z: 3.1,
+                    w: 0.0,
+                }
+            );
         }
         #[test]
         fn can_be_created_default() {
-            let vector = super::Vector::origin();
-            let super::Vector(three_part) = vector;
-            assert_eq!(three_part.x, 0.0);
-            assert_eq!(three_part.y, 0.0);
-            assert_eq!(three_part.z, 0.0);
-            check_w_is_zero(three_part);
+            let vector = Vector::origin();
+            let Vector(three_part) = vector;
+
+            assert_eq!(
+                three_part,
+                ThreePart {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                    w: 0.0
+                }
+            );
         }
         #[test]
         fn can_be_created_values() {
-            let vector = super::Vector::new(4.3, -4.2, 3.1);
-            let super::Vector(three_part) = vector;
-            assert_eq!(three_part.x, 4.3);
-            assert_eq!(three_part.y, -4.2);
-            assert_eq!(three_part.z, 3.1);
-            check_w_is_zero(three_part);
+            let vector = Vector::new(4.3, -4.2, 3.1);
+            let Vector(three_part) = vector;
+
+            assert_eq!(
+                three_part,
+                ThreePart {
+                    x: 4.3,
+                    y: -4.2,
+                    z: 3.1,
+                    w: 0.0
+                }
+            );
+        }
+
+        #[test]
+        fn can_be_added() {
+            let vector = Vector::new(4.3, -4.2, 3.1);
+            let vector2 = Vector::new(1.2, 3.4, -5.6);
+            let vector3 = vector + vector2;
+            let Vector(three_part) = vector3;
+
+            assert_eq!(
+                three_part,
+                ThreePart {
+                    x: 5.5,
+                    y: -0.8,
+                    z: -2.5,
+                    w: 0.0
+                }
+            );
+        }
+
+        #[test]
+        fn can_be_subtracted() {
+            let vector = Vector::new(4.3, -4.2, 3.1);
+            let vector2 = Vector::new(1.2, 3.4, -5.6);
+            let vector3 = vector - vector2;
+            let Vector(three_part) = vector3;
+
+            assert_eq!(
+                three_part,
+                ThreePart {
+                    x: 3.1,
+                    y: -7.6,
+                    z: 8.7,
+                    w: 0.0
+                }
+            );
+        }
+
+        #[test]
+        fn can_be_multiplied_by_a_scalar() {
+            let vector = Vector::new(4.3, -4.2, 3.1);
+            let vector2 = vector * 2.0;
+            let Vector(three_part) = vector2;
+
+            assert_eq!(
+                three_part,
+                ThreePart {
+                    x: 8.6,
+                    y: -8.4,
+                    z: 6.2,
+                    w: 0.0
+                }
+            );
+        }
+
+        #[test]
+        fn can_be_divided_by_a_scalar() {
+            let vector = Vector::new(4.3, -4.2, 3.1);
+            let vector2 = vector / 2.0;
+            let Vector(three_part) = vector2;
+
+            assert_eq!(
+                three_part,
+                ThreePart {
+                    x: 2.15,
+                    y: -2.1,
+                    z: 1.55,
+                    w: 0.0
+                }
+            );
         }
     }
 }
