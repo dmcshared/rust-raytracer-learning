@@ -17,6 +17,16 @@ pub mod vector {
         pub fn new(x: f64, y: f64, z: f64) -> Self {
             Vector(ThreePart { x, y, z, w: 0.0 })
         }
+
+        pub fn magnitude(&self) -> f64 {
+            let Vector(self_part) = self;
+            (self_part.x.powi(2) + self_part.y.powi(2) + self_part.z.powi(2)).sqrt()
+        }
+
+        pub fn sqr_magnitude(&self) -> f64 {
+            let Vector(self_part) = self;
+            (self_part.x.powi(2) + self_part.y.powi(2) + self_part.z.powi(2)).sqrt()
+        }
     }
 
     // use crate::three_part::point::point::Point;
@@ -58,7 +68,7 @@ pub mod vector {
 
         fn neg(self) -> Self::Output {
             let Vector(lhs) = self;
-            Vector::new(lhs.x, lhs.y, lhs.z)
+            Vector::new(-lhs.x, -lhs.y, -lhs.z)
         }
     }
 
@@ -189,6 +199,50 @@ pub mod vector {
                     w: 0.0
                 }
             );
+        }
+
+        #[test]
+        fn can_be_negated() {
+            let vector = Vector::new(4.3, -4.2, 3.1);
+            let vector2 = -vector;
+            let Vector(three_part) = vector2;
+
+            assert_eq!(
+                three_part,
+                ThreePart {
+                    x: -4.3,
+                    y: 4.2,
+                    z: -3.1,
+                    w: 0.0
+                }
+            );
+        }
+
+        #[test]
+        fn get_magnitude_of_unit_vector() {
+            let vector = Vector::new(1., 0., 0.);
+            let magnitude = vector.magnitude();
+            let expected_magnitude = 1.0;
+
+            assert_eq!(magnitude, expected_magnitude);
+        }
+
+        #[test]
+        fn get_magnitude_of_1_2_3_vector() {
+            let vector = Vector::new(1., 2., 3.);
+            let magnitude = vector.magnitude();
+            let expected_magnitude = 3.7416573867739413;
+
+            assert_eq!(magnitude, expected_magnitude);
+        }
+
+        #[test]
+        fn get_magnitude_of_negative_1_2_3_vector() {
+            let vector = Vector::new(-1., -2., -3.);
+            let magnitude = vector.magnitude();
+            let expected_magnitude = 3.7416573867739413;
+
+            assert_eq!(magnitude, expected_magnitude);
         }
     }
 }
