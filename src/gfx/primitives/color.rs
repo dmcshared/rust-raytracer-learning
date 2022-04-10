@@ -100,6 +100,10 @@ impl ColorRGBA {
     pub fn gamma(&self) -> f64 {
         self.0.powf(2.2) + self.1.powf(2.2) + self.2.powf(2.2)
     }
+
+    pub fn blank() -> ColorRGBA {
+        ColorRGBA(0.0, 0.0, 0.0, 0.0)
+    }
 }
 
 impl From<ColorHSLA> for ColorRGBA {
