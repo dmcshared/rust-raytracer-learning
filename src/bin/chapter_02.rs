@@ -8,7 +8,7 @@ use raytracer::{
         image_formats::{ppm::PPMP3Image, Image},
         primitives::color::ColorRGBA,
     },
-    three_part::{point::Point, vector::Vector},
+    primitives::three_part::{point::Point, vector::Vector},
 };
 
 #[derive(Debug)]

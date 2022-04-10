@@ -1,3 +1,3 @@
 pub mod gfx;
-pub mod three_part;
+pub mod primitives;
 mod util;

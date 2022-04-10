@@ -14,7 +14,7 @@ impl Point {
     }
 }
 
-use crate::three_part::vector::Vector;
+use crate::primitives::three_part::vector::Vector;
 
 impl ops::Add<Vector> for Point {
     type Output = Point;

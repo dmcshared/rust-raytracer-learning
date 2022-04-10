@@ -1,6 +1,6 @@
 extern crate raytracer;
 
-use raytracer::three_part::{point::Point, vector::Vector};
+use raytracer::primitives::three_part::{point::Point, vector::Vector};
 
 fn main() {
     let environment = Environment::new(Vector::new(0.0, -0.1, 0.0), Vector::new(-0.0001, 0.0, 0.0));
