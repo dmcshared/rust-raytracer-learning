@@ -142,7 +142,16 @@ impl Image for PPMP3Image {
         let color_data: Vec<u8> = self
             .pixels
             .iter()
-            .flat_map(|c| format!("{} {} {}\n", c.0, c.1, c.2).as_bytes().to_vec())
+            .flat_map(|c| {
+                format!(
+                    "{} {} {}\n",
+                    ((c.0.clamp(0.0, 1.0) * 255.0) as u8),
+                    ((c.1.clamp(0.0, 1.0) * 255.0) as u8),
+                    ((c.2.clamp(0.0, 1.0) * 255.0) as u8),
+                )
+                .as_bytes()
+                .to_vec()
+            })
             .collect();
 
         bytes.extend(color_data);

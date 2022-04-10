@@ -107,10 +107,10 @@ impl ColorRGBA {
 
     pub fn as_bytes(&self) -> Vec<u8> {
         [
-            (self.0 * 255.0) as u8,
-            (self.1 * 255.0) as u8,
-            (self.2 * 255.0) as u8,
-            (self.3 * 255.0) as u8,
+            (self.0.clamp(0.0, 1.0) * 255.0) as u8,
+            (self.1.clamp(0.0, 1.0) * 255.0) as u8,
+            (self.2.clamp(0.0, 1.0) * 255.0) as u8,
+            (self.3.clamp(0.0, 1.0) * 255.0) as u8,
         ]
         .to_vec()
     }
