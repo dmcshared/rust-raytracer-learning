@@ -104,6 +104,16 @@ impl ColorRGBA {
     pub fn blank() -> ColorRGBA {
         ColorRGBA(0.0, 0.0, 0.0, 0.0)
     }
+
+    pub fn as_bytes(&self) -> Vec<u8> {
+        [
+            (self.0 * 255.0) as u8,
+            (self.1 * 255.0) as u8,
+            (self.2 * 255.0) as u8,
+            (self.3 * 255.0) as u8,
+        ]
+        .to_vec()
+    }
 }
 
 impl From<ColorHSLA> for ColorRGBA {
