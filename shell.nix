@@ -5,7 +5,7 @@ let
   # Rolling updates, not deterministic.
   # pkgs = import (fetchTarball("channel:nixpkgs-unstable")) {};
 in pkgs.mkShell {
-  buildInputs = [ pkgs.cargo pkgs.rustc pkgs.rustfmt ];
+  buildInputs = [ pkgs.cargo pkgs.rustc pkgs.rustfmt pkgs.clang ];
 
   # Certain Rust tools won't work without this
   # This can also be fixed by using oxalica/rust-overlay and specifying the rust-src extension
