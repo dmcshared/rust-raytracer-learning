@@ -10,7 +10,7 @@ fn main() {
 
     let mut current = projectile;
     let mut iteration: i32 = 0;
-    while current.position.0.y > 0.0 {
+    while current.position.0 .1 > 0.0 {
         println!("{}: {:?}", iteration, current);
         current = tick(&environment, &current);
         iteration += 1;

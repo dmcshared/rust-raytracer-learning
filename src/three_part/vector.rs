@@ -7,25 +7,20 @@ pub struct Vector(pub ThreePart);
 
 impl Vector {
     pub fn origin() -> Self {
-        Vector(ThreePart {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            w: 0.0,
-        })
+        Vector(ThreePart(0.0, 0.0, 0.0, 0.0))
     }
     pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Vector(ThreePart { x, y, z, w: 0.0 })
+        Vector(ThreePart(x, y, z, 0.0))
     }
 
     pub fn magnitude(&self) -> f64 {
         let Vector(self_part) = self;
-        (self_part.x.powi(2) + self_part.y.powi(2) + self_part.z.powi(2)).sqrt()
+        (self_part.0.powi(2) + self_part.1.powi(2) + self_part.2.powi(2)).sqrt()
     }
 
     pub fn sqr_magnitude(&self) -> f64 {
         let Vector(self_part) = self;
-        (self_part.x.powi(2) + self_part.y.powi(2) + self_part.z.powi(2)).sqrt()
+        (self_part.0.powi(2) + self_part.1.powi(2) + self_part.2.powi(2)).sqrt()
     }
 
     pub fn normalize(&self) -> Vector {
@@ -40,7 +35,7 @@ impl ops::Add for Vector {
 
     fn add(self, Vector(rhs): Vector) -> Self::Output {
         let Vector(lhs) = self;
-        Vector::new(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z)
+        Vector::new(lhs.0 + rhs.0, lhs.1 + rhs.1, lhs.2 + rhs.2)
     }
 }
 impl ops::Sub for Vector {
@@ -48,7 +43,7 @@ impl ops::Sub for Vector {
 
     fn sub(self, Vector(rhs): Vector) -> Self::Output {
         let Vector(lhs) = self;
-        Vector::new(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z)
+        Vector::new(lhs.0 - rhs.0, lhs.1 - rhs.1, lhs.2 - rhs.2)
     }
 }
 impl ops::Mul<f64> for Vector {
@@ -56,7 +51,7 @@ impl ops::Mul<f64> for Vector {
 
     fn mul(self, rhs: f64) -> Self::Output {
         let Vector(lhs) = self;
-        Vector::new(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs)
+        Vector::new(lhs.0 * rhs, lhs.1 * rhs, lhs.2 * rhs)
     }
 }
 impl ops::Div<f64> for Vector {
@@ -64,7 +59,7 @@ impl ops::Div<f64> for Vector {
 
     fn div(self, rhs: f64) -> Self::Output {
         let Vector(lhs) = self;
-        Vector::new(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs)
+        Vector::new(lhs.0 / rhs, lhs.1 / rhs, lhs.2 / rhs)
     }
 }
 impl ops::Neg for Vector {
@@ -72,7 +67,7 @@ impl ops::Neg for Vector {
 
     fn neg(self) -> Self::Output {
         let Vector(lhs) = self;
-        Vector::new(-lhs.x, -lhs.y, -lhs.z)
+        Vector::new(-lhs.0, -lhs.1, -lhs.2)
     }
 }
 
@@ -82,7 +77,7 @@ impl ops::Mul for Vector {
 
     fn mul(self, Vector(rhs): Vector) -> Self::Output {
         let Vector(lhs) = self;
-        lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
+        lhs.0 * rhs.0 + lhs.1 * rhs.1 + lhs.2 * rhs.2
     }
 }
 
@@ -93,9 +88,9 @@ impl ops::Div for Vector {
     fn div(self, Vector(rhs): Vector) -> Self::Output {
         let Vector(lhs) = self;
         Vector::new(
-            lhs.y * rhs.z - lhs.z * rhs.y,
-            lhs.z * rhs.x - lhs.x * rhs.z,
-            lhs.x * rhs.y - lhs.y * rhs.x,
+            lhs.1 * rhs.2 - lhs.2 * rhs.1,
+            lhs.2 * rhs.0 - lhs.0 * rhs.2,
+            lhs.0 * rhs.1 - lhs.1 * rhs.0,
         )
     }
 }
@@ -106,53 +101,24 @@ mod tests {
 
     #[test]
     fn can_be_created_direct() {
-        let vector = Vector(ThreePart {
-            x: 4.3,
-            y: -4.2,
-            z: 3.1,
-            w: 0.0,
-        });
+        let vector = Vector(ThreePart(4.3, -4.2, 3.1, 0.0));
         let Vector(three_part) = vector;
 
-        assert_eq!(
-            three_part,
-            ThreePart {
-                x: 4.3,
-                y: -4.2,
-                z: 3.1,
-                w: 0.0,
-            }
-        );
+        assert_eq!(three_part, ThreePart(4.3, -4.2, 3.1, 0.0,));
     }
     #[test]
     fn can_be_created_default() {
         let vector = Vector::origin();
         let Vector(three_part) = vector;
 
-        assert_eq!(
-            three_part,
-            ThreePart {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-                w: 0.0
-            }
-        );
+        assert_eq!(three_part, ThreePart(0.0, 0.0, 0.0, 0.0));
     }
     #[test]
     fn can_be_created_values() {
         let vector = Vector::new(4.3, -4.2, 3.1);
         let Vector(three_part) = vector;
 
-        assert_eq!(
-            three_part,
-            ThreePart {
-                x: 4.3,
-                y: -4.2,
-                z: 3.1,
-                w: 0.0
-            }
-        );
+        assert_eq!(three_part, ThreePart(4.3, -4.2, 3.1, 0.0));
     }
 
     #[test]
@@ -162,15 +128,7 @@ mod tests {
         let vector3 = vector + vector2;
         let Vector(three_part) = vector3;
 
-        assert_eq!(
-            three_part,
-            ThreePart {
-                x: 5.5,
-                y: -0.8,
-                z: -2.5,
-                w: 0.0
-            }
-        );
+        assert_eq!(three_part, ThreePart(5.5, -0.8, -2.5, 0.0));
     }
 
     #[test]
@@ -180,15 +138,7 @@ mod tests {
         let vector3 = vector - vector2;
         let Vector(three_part) = vector3;
 
-        assert_eq!(
-            three_part,
-            ThreePart {
-                x: 3.1,
-                y: -7.6,
-                z: 8.7,
-                w: 0.0
-            }
-        );
+        assert_eq!(three_part, ThreePart(3.1, -7.6, 8.7, 0.0));
     }
 
     #[test]
@@ -197,15 +147,7 @@ mod tests {
         let vector2 = vector * 2.0;
         let Vector(three_part) = vector2;
 
-        assert_eq!(
-            three_part,
-            ThreePart {
-                x: 8.6,
-                y: -8.4,
-                z: 6.2,
-                w: 0.0
-            }
-        );
+        assert_eq!(three_part, ThreePart(8.6, -8.4, 6.2, 0.0));
     }
 
     #[test]
@@ -214,15 +156,7 @@ mod tests {
         let vector2 = vector / 2.0;
         let Vector(three_part) = vector2;
 
-        assert_eq!(
-            three_part,
-            ThreePart {
-                x: 2.15,
-                y: -2.1,
-                z: 1.55,
-                w: 0.0
-            }
-        );
+        assert_eq!(three_part, ThreePart(2.15, -2.1, 1.55, 0.0));
     }
 
     #[test]
@@ -231,15 +165,7 @@ mod tests {
         let vector2 = -vector;
         let Vector(three_part) = vector2;
 
-        assert_eq!(
-            three_part,
-            ThreePart {
-                x: -4.3,
-                y: 4.2,
-                z: -3.1,
-                w: 0.0
-            }
-        );
+        assert_eq!(three_part, ThreePart(-4.3, 4.2, -3.1, 0.0));
     }
 
     #[test]
