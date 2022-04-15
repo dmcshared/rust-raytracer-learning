@@ -91,6 +91,8 @@ mod tests {
          * Maximum Color Value: 255
          */
         let expected_header = String::from("P3\n5 3\n255\n").into_bytes();
+
+        assert_eq!(ppm.as_bytes_header(), expected_header);
     }
 
     #[test]
@@ -106,6 +108,8 @@ mod tests {
             "P7\nWIDTH 5\nHEIGHT 3\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n",
         )
         .into_bytes();
+
+        assert_eq!(ppm.as_bytes_header(), expected_header);
     }
 
     #[test]
