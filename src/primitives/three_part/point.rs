@@ -2,7 +2,7 @@ use std::ops;
 
 use super::ThreePart;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point(pub ThreePart);
 
 impl Point {
