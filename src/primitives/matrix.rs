@@ -63,7 +63,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
         result
     }
 
-    fn submatrix<const NWIDTH: usize, const NHEIGHT: usize>(
+    fn contiguous_submatrix<const NWIDTH: usize, const NHEIGHT: usize>(
         &self,
         x: usize,
         y: usize,
@@ -78,6 +78,31 @@ impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
             }
         }
         result
+    }
+
+    fn submatrix<const NWIDTH: usize, const NHEIGHT: usize>(
+        &self,
+        row: usize,
+        column: usize,
+    ) -> Matrix<NWIDTH, NHEIGHT> {
+        assert!(WIDTH - NWIDTH == 1);
+        assert!(HEIGHT - NHEIGHT == 1);
+
+        let mut result = Matrix::<NWIDTH, NHEIGHT>::new();
+        for dy in 0..NHEIGHT {
+            for dx in 0..NWIDTH {
+                result.set_position(
+                    dx,
+                    dy,
+                    self.get_position(dx + ((dx >= column) as usize), dy + ((dy >= row) as usize)),
+                );
+            }
+        }
+        result
+    }
+
+    fn minor(&self, row: usize, column: usize) -> f64 {
+        self.submatrix(row, column).determinant()
     }
 }
 
@@ -515,7 +540,7 @@ mod tests {
     fn get_2x2_submatrix_of_3x3() {
         let matrix = Matrix3f::new_with_data([[1.0, 5.0, 0.0], [-3.0, 2.0, 7.0], [0.0, 6.0, -3.0]]);
 
-        let submatrix = matrix.submatrix::<2, 2>(0, 1);
+        let submatrix = matrix.submatrix::<2, 2>(0, 2);
 
         assert_fuzzy_eq!(
             submatrix,
@@ -536,7 +561,24 @@ mod tests {
 
         assert_fuzzy_eq!(
             submatrix,
-            Matrix3f::new_with_data([[1.0, 5.0, 0.0], [-3.0, 2.0, 7.0], [0.0, 6.0, -3.0],])
+            Matrix3f::new_with_data([[2.0, 7.0, 0.0], [6.0, -3.0, 0.0], [0.0, 0.0, -2.0],])
         );
+    }
+
+    #[test]
+    fn calculate_minor_of_3x3() {
+        let m = Matrix3f::new_with_data([
+            //
+            [3.0, 5.0, 0.0],
+            [2.0, -1.0, -7.0],
+            [6.0, -1.0, 5.0],
+        ]);
+
+        let sub = m.submatrix::<2, 2>(1, 0);
+        let determinant = sub.determinant();
+        let minor = m.minor(1, 0);
+
+        assert_eq!(25.0, determinant);
+        assert_eq!(25.0, minor);
     }
 }
