@@ -1,6 +1,6 @@
 use std::ops;
 
-use crate::util::f64_fuzzy_eq;
+use crate::util::fuzzy_comparison::f64_fuzzy_eq;
 
 use super::mix_modes::MixMode;
 
