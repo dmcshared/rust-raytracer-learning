@@ -62,6 +62,23 @@ impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
         }
         result
     }
+
+    fn submatrix<const NWIDTH: usize, const NHEIGHT: usize>(
+        &self,
+        x: usize,
+        y: usize,
+    ) -> Matrix<NWIDTH, NHEIGHT> {
+        assert!((x + NWIDTH) <= WIDTH);
+        assert!((y + NHEIGHT) <= HEIGHT);
+
+        let mut result = Matrix::<NWIDTH, NHEIGHT>::new();
+        for dy in 0..NHEIGHT {
+            for dx in 0..NWIDTH {
+                result.set_position(dx, dy, self.get_position(x + dx, y + dy));
+            }
+        }
+        result
+    }
 }
 
 // Square Matrices
@@ -492,5 +509,17 @@ mod tests {
         let matrix = Matrix2f::new_with_data([[1.0, 5.0], [-3.0, 2.0]]);
 
         assert_eq!(matrix.determinant(), 17.0);
+    }
+
+    #[test]
+    fn get_2x2_submatrix_of_3x3() {
+        let matrix = Matrix3f::new_with_data([[1.0, 5.0, 0.0], [-3.0, 2.0, 7.0], [0.0, 6.0, -3.0]]);
+
+        let submatrix = matrix.submatrix::<2, 2>(0, 1);
+
+        assert_fuzzy_eq!(
+            submatrix,
+            Matrix2f::new_with_data([[-3.0, 2.0], [0.0, 6.0]])
+        );
     }
 }
