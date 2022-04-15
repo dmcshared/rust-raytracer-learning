@@ -286,6 +286,24 @@ mod tests {
     }
 
     #[test]
+    fn transpose_4x4_matrix() {
+        let matrix = Matrix4f::new_with_data([
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]);
+
+        let transposed = matrix.transpose();
+
+        for y in 0..4 {
+            for x in 0..4 {
+                assert_eq!(transposed.get_position(x, y), matrix.get_position(y, x));
+            }
+        }
+    }
+
+    #[test]
     fn multiply_two_4x4_matrices() {
         let matrix1 = Matrix4f::new_with_data([
             [1.0, 2.0, 3.0, 4.0],
