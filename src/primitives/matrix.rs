@@ -79,7 +79,11 @@ impl<const SIZE: usize> Matrix<SIZE, SIZE> {
 
 impl Matrix4f {}
 impl Matrix3f {}
-impl Matrix2f {}
+impl Matrix2f {
+    fn determinant(&self) -> f64 {
+        self[0][0] * self[1][1] - self[0][1] * self[1][0]
+    }
+}
 
 impl<const WIDTH: usize, const HEIGHT: usize> FuzzyPartialEq<Self> for Matrix<WIDTH, HEIGHT> {
     fn fuzzy_eq(self, other: Self) -> bool {
@@ -463,5 +467,12 @@ mod tests {
         let result: Vector = matrix * point;
 
         assert_eq!(result, Vector::new(1.0, 2.0, 3.0));
+    }
+
+    #[test]
+    fn determinant_of_2x2_matrix() {
+        let matrix = Matrix2f::new_with_data([[1.0, 5.0], [-3.0, 2.0]]);
+
+        assert_eq!(matrix.determinant(), 17.0);
     }
 }
