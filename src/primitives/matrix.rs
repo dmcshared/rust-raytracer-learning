@@ -522,4 +522,21 @@ mod tests {
             Matrix2f::new_with_data([[-3.0, 2.0], [0.0, 6.0]])
         );
     }
+
+    #[test]
+    fn get_3x3_submatrix_of_4x4() {
+        let matrix = Matrix4f::new_with_data([
+            [1.0, 5.0, 0.0, 0.0],
+            [-3.0, 2.0, 7.0, 0.0],
+            [0.0, 6.0, -3.0, 0.0],
+            [0.0, 0.0, 0.0, -2.0],
+        ]);
+
+        let submatrix = matrix.submatrix::<3, 3>(0, 0);
+
+        assert_fuzzy_eq!(
+            submatrix,
+            Matrix3f::new_with_data([[1.0, 5.0, 0.0], [-3.0, 2.0, 7.0], [0.0, 6.0, -3.0],])
+        );
+    }
 }
