@@ -77,6 +77,10 @@ impl<const SIZE: usize> Matrix<SIZE, SIZE> {
     }
 }
 
+impl Matrix4f {}
+impl Matrix3f {}
+impl Matrix2f {}
+
 impl<const WIDTH: usize, const HEIGHT: usize> FuzzyPartialEq<Self> for Matrix<WIDTH, HEIGHT> {
     fn fuzzy_eq(self, other: Self) -> bool {
         for y in 0..HEIGHT {
