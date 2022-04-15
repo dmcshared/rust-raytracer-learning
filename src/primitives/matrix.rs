@@ -35,25 +35,25 @@ impl<const WIDTH: usize, const HEIGHT: usize> ops::IndexMut<usize> for Matrix<WI
 
 // Regular Impl
 impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             data: [[0.0; WIDTH]; HEIGHT],
         }
     }
 
-    fn new_with_data(data: [[f64; WIDTH]; HEIGHT]) -> Self {
+    pub fn new_with_data(data: [[f64; WIDTH]; HEIGHT]) -> Self {
         Self { data }
     }
 
-    fn get_position(&self, x: usize, y: usize) -> f64 {
+    pub fn get_position(&self, x: usize, y: usize) -> f64 {
         self.data[y][x]
     }
 
-    fn set_position(&mut self, x: usize, y: usize, value: f64) {
+    pub fn set_position(&mut self, x: usize, y: usize, value: f64) {
         self.data[y][x] = value;
     }
 
-    fn transpose(&self) -> Matrix<HEIGHT, WIDTH> {
+    pub fn transpose(&self) -> Matrix<HEIGHT, WIDTH> {
         let mut result = Matrix::<HEIGHT, WIDTH>::new();
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
@@ -63,7 +63,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
         result
     }
 
-    fn contiguous_submatrix<const NWIDTH: usize, const NHEIGHT: usize>(
+    pub fn contiguous_submatrix<const NWIDTH: usize, const NHEIGHT: usize>(
         &self,
         x: usize,
         y: usize,
@@ -80,7 +80,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
         result
     }
 
-    fn submatrix<const NWIDTH: usize, const NHEIGHT: usize>(
+    pub fn submatrix<const NWIDTH: usize, const NHEIGHT: usize>(
         &self,
         row: usize,
         column: usize,
@@ -101,7 +101,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
         result
     }
 
-    fn minor(&self, row: usize, column: usize) -> f64 {
+    pub fn minor(&self, row: usize, column: usize) -> f64 {
         self.submatrix(row, column).determinant()
     }
 
@@ -590,5 +590,21 @@ mod tests {
 
         assert_eq!(25.0, determinant);
         assert_eq!(25.0, minor);
+    }
+
+    #[test]
+    fn calculating_a_cofactor_of_a_3x3_matrix() {
+        let m = Matrix::new_with_data([[3.0, 5.0, 0.0], [2.0, -1.0, -7.0], [6.0, -1.0, 5.0]]);
+
+        let minor1 = m.minor(0, 0);
+        let minor2 = m.minor(1, 0);
+
+        let cofactor1 = m.cofactor(0, 0);
+        let cofactor2 = m.cofactor(1, 0);
+
+        assert_fuzzy_eq!(-12.0, minor1);
+        assert_fuzzy_eq!(-12.0, cofactor1);
+        assert_fuzzy_eq!(25.0, minor2);
+        assert_fuzzy_eq!(-25.0, cofactor2);
     }
 }
