@@ -101,19 +101,13 @@ impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
         result
     }
 
-    pub fn minor(&self, row: usize, column: usize) -> f64 {
-        self.submatrix(row, column).determinant()
-    }
-
-    pub fn cofactor(&self, row: usize, column: usize) -> f64 {
-        let minor = self.minor(row, column);
-        if (row + column) % 2 == 0 {
-            // Even value
-            minor
-        } else {
-            -minor
-        }
-    }
+    // pub fn minor<const NWIDTH: usize, const NHEIGHT: usize>(
+    //     &self,
+    //     row: usize,
+    //     column: usize,
+    // ) -> f64 {
+    //     self.submatrix::<NWIDTH, NHEIGHT>(row, column).determinant()
+    // }
 }
 
 // Square Matrices
@@ -129,11 +123,87 @@ impl<const SIZE: usize> Matrix<SIZE, SIZE> {
     }
 }
 
-impl Matrix4f {}
-impl Matrix3f {}
+impl Matrix4f {
+    pub fn determinant(&self) -> f64 {
+        let mut determinant: f64 = 0.0;
+        for column in 0..4 {
+            determinant += self.cofactor(0, column) * self[0][column];
+        }
+
+        determinant
+    }
+
+    pub fn minor(&self, row: usize, column: usize) -> f64 {
+        self.submatrix::<3, 3>(row, column).determinant()
+    }
+
+    pub fn cofactor(&self, row: usize, column: usize) -> f64 {
+        let minor = self.minor(row, column);
+        if (row + column) % 2 == 0 {
+            // Even value
+            minor
+        } else {
+            -minor
+        }
+    }
+
+    pub fn is_invertible(&self) -> bool {
+        !self.determinant().fuzzy_eq(0.0)
+    }
+
+    pub fn inverse(&self) -> Option<Matrix4f> {
+        let deter = self.determinant();
+
+        if deter == 0.0 {
+            return None;
+        }
+
+        let mut out = Matrix4f::new();
+
+        for row in 0..4 {
+            for column in 0..4 {
+                out.set_position(row, column, self.cofactor(row, column) / deter);
+            }
+        }
+
+        Some(out)
+    }
+}
+impl Matrix3f {
+    pub fn determinant(&self) -> f64 {
+        let mut determinant: f64 = 0.0;
+        for column in 0..3 {
+            determinant += self.cofactor(0, column) * self[0][column];
+        }
+
+        determinant
+    }
+
+    pub fn minor(&self, row: usize, column: usize) -> f64 {
+        self.submatrix::<2, 2>(row, column).determinant()
+    }
+
+    pub fn cofactor(&self, row: usize, column: usize) -> f64 {
+        let minor = self.minor(row, column);
+        if (row + column) % 2 == 0 {
+            // Even value
+            minor
+        } else {
+            -minor
+        }
+    }
+
+    pub fn is_invertible(&self) -> bool {
+        !self.determinant().fuzzy_eq(0.0)
+    }
+}
 impl Matrix2f {
-    fn determinant(&self) -> f64 {
+    pub fn determinant(&self) -> f64 {
         self[0][0] * self[1][1] - self[0][1] * self[1][0]
+    }
+
+    pub fn is_invertible(&self) -> bool {
+        !self.determinant().fuzzy_eq(0.0)
     }
 }
 
@@ -606,5 +676,134 @@ mod tests {
         assert_fuzzy_eq!(-12.0, cofactor1);
         assert_fuzzy_eq!(25.0, minor2);
         assert_fuzzy_eq!(-25.0, cofactor2);
+    }
+
+    #[test]
+    fn calculate_the_minor_of_a_3x3_matrix() {
+        let m = Matrix3f::new_with_data([[3.0, 5.0, 0.0], [2.0, -1.0, -7.0], [6.0, -1.0, 5.0]]);
+
+        let sub = m.submatrix::<2, 2>(1, 0);
+        let determinant = sub.determinant();
+        let minor = m.minor(1, 0);
+
+        assert_fuzzy_eq!(25.0, determinant);
+        assert_fuzzy_eq!(25.0, minor);
+    }
+
+    #[test]
+    fn calculate_the_determinant_of_a_3x3_matrix() {
+        let m = Matrix::new_with_data([[1.0, 2.0, 6.0], [-5.0, 8.0, -4.0], [2.0, 6.0, 4.0]]);
+
+        let cofactor00 = m.cofactor(0, 0);
+        let cofactor01 = m.cofactor(0, 1);
+        let cofactor02 = m.cofactor(0, 2);
+
+        let determinant = m.determinant();
+
+        assert_fuzzy_eq!(56.0, cofactor00);
+        assert_fuzzy_eq!(12.0, cofactor01);
+        assert_fuzzy_eq!(-46.0, cofactor02);
+
+        assert_fuzzy_eq!(-196.0, determinant);
+    }
+
+    #[test]
+    fn calculating_the_determinant_of_a_4x4_matrix() {
+        let m = Matrix::new_with_data([
+            [-2.0, -8.0, 3.0, 5.0],
+            [-3.0, 1.0, 7.0, 3.0],
+            [1.0, 2.0, -9.0, 6.0],
+            [-6.0, 7.0, 7.0, -9.0],
+        ]);
+
+        let cofactor00 = m.cofactor(0, 0);
+        let cofactor01 = m.cofactor(0, 1);
+        let cofactor02 = m.cofactor(0, 2);
+        let cofactor03 = m.cofactor(0, 3);
+
+        let determinant = m.determinant();
+
+        assert_fuzzy_eq!(690.0, cofactor00);
+        assert_fuzzy_eq!(447.0, cofactor01);
+        assert_fuzzy_eq!(210.0, cofactor02);
+        assert_fuzzy_eq!(51.0, cofactor03);
+
+        assert_fuzzy_eq!(-4071.0, determinant);
+    }
+
+    #[test]
+    fn testing_an_invertible_matrix_for_invertibility() {
+        let m = Matrix::new_with_data([
+            [6.0, 4.0, 4.0, 4.0],
+            [5.0, 5.0, 7.0, 6.0],
+            [4.0, -9.0, 3.0, -7.0],
+            [9.0, 1.0, 7.0, -6.0],
+        ]);
+
+        let determinant = m.determinant();
+
+        assert_fuzzy_eq!(-2120.0, determinant);
+        assert!(m.is_invertible());
+    }
+
+    #[test]
+    fn testing_an_noninvertible_matrix_for_invertibility() {
+        let m = Matrix::new_with_data([
+            [-4.0, 2.0, -2.0, -3.0],
+            [9.0, 6.0, 2.0, 6.0],
+            [0.0, -5.0, 1.0, -5.0],
+            [0.0, 0.0, 0.0, 0.0],
+        ]);
+
+        let determinant = m.determinant();
+
+        assert_fuzzy_eq!(0.0, determinant);
+        assert!(!m.is_invertible());
+    }
+
+    #[test]
+    fn inverse_matrix() {
+        let m = Matrix::new_with_data([
+            [-5.0, 2.0, 6.0, -8.0],
+            [1.0, -5.0, 1.0, 8.0],
+            [7.0, 7.0, -6.0, -7.0],
+            [1.0, -3.0, 7.0, 4.0],
+        ]);
+
+        let determinant = m.determinant();
+        let cofactor23 = m.cofactor(2, 3);
+        let cofactor32 = m.cofactor(3, 2);
+
+        let expected_result = Matrix::new_with_data([
+            [0.21805, 0.45113, 0.24060, -0.04511],
+            [-0.80827, -1.45677, -0.44361, 0.52068],
+            [-0.07895, -0.22368, -0.05263, 0.19737],
+            [-0.52256, -0.81391, -0.30075, 0.30639],
+        ]);
+
+        let actual_result = m.inverse().unwrap();
+
+        assert_fuzzy_eq!(532.0, determinant);
+        assert_fuzzy_eq!(-160.0, cofactor23);
+        assert_fuzzy_eq!(-160.0 / 532.0, actual_result[3][2]);
+        assert_fuzzy_eq!(105.0, cofactor32);
+        assert_fuzzy_eq!(105.0 / 532.0, actual_result[2][3]);
+        assert_fuzzy_eq!(actual_result, expected_result);
+    }
+
+    #[test]
+    fn matrix_times_inverted_matrix_should_be_identity() {
+        let m = Matrix::new_with_data([
+            [3.0, -9.0, 7.0, 3.0],
+            [3.0, -8.0, 2.0, -9.0],
+            [-4.0, 4.0, 4.0, 1.0],
+            [-6.0, 5.0, -1.0, 1.0],
+        ]);
+
+        let inverse = m.inverse().unwrap();
+
+        let identity = m * inverse;
+
+        assert_fuzzy_eq!(identity, Matrix4f::identity());
     }
 }
