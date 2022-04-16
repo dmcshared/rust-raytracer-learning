@@ -130,6 +130,21 @@ impl Matrix4f {
     // }
 }
 
+impl Matrix4f {
+    pub fn shear(x: f64, y: f64, z: f64) -> Matrix4f {
+        Matrix4f::shear_raw(x * y, x * z, y * x, y * z, z * x, z * y)
+    }
+
+    pub fn shear_raw(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Matrix4f {
+        Self::new_with_data([
+            [1.0, xy, xz, 0.0],
+            [yx, 1.0, yz, 0.0],
+            [zx, zy, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::primitives::{
@@ -271,5 +286,81 @@ mod tests {
         let transformed_point = result * test_point;
 
         assert_eq!(transformed_point, expected_point);
+    }
+
+    #[test]
+    fn a_shearing_transformation_moves_x_in_proportion_to_y() {
+        let transform = Matrix4f::shear_raw(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_fuzzy_eq!(transform * p, Point::new(5.0, 3.0, 4.0));
+    }
+
+    #[test]
+    fn a_shearing_transformation_moves_x_in_proportion_to_z() {
+        let transform = Matrix4f::shear_raw(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_fuzzy_eq!(transform * p, Point::new(6.0, 3.0, 4.0));
+    }
+
+    #[test]
+    fn a_shearing_transformation_moves_y_in_proportion_to_x() {
+        let transform = Matrix4f::shear_raw(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_fuzzy_eq!(transform * p, Point::new(2.0, 5.0, 4.0));
+    }
+
+    #[test]
+    fn a_shearing_transformation_moves_y_in_proportion_to_z() {
+        let transform = Matrix4f::shear_raw(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_fuzzy_eq!(transform * p, Point::new(2.0, 7.0, 4.0));
+    }
+
+    #[test]
+    fn a_shearing_transformation_moves_z_in_proportion_to_x() {
+        let transform = Matrix4f::shear_raw(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_fuzzy_eq!(transform * p, Point::new(2.0, 3.0, 6.0));
+    }
+
+    #[test]
+    fn a_shearing_transformation_moves_z_in_proportion_to_y() {
+        let transform = Matrix4f::shear_raw(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_fuzzy_eq!(transform * p, Point::new(2.0, 3.0, 7.0));
+    }
+
+    #[test]
+    fn individual_transformation_are_applied_in_sequence() {
+        let p = Point::new(1.0, 0.0, 1.0);
+        let a = Matrix4f::rotate_around_x(Degree(90.0).into());
+        let b = Matrix4f::scale_raw(5.0, 5.0, 5.0);
+        let c = Matrix4f::translate_raw(10.0, 5.0, 7.0);
+
+        let p2 = a * p;
+        assert_fuzzy_eq!(p2, Point::new(1.0, -1.0, 0.0));
+
+        let p3 = b * p2;
+        assert_fuzzy_eq!(p3, Point::new(5.0, -5.0, 0.0));
+
+        let p4 = c * p3;
+        assert_fuzzy_eq!(p4, Point::new(15.0, 0.0, 7.0));
+    }
+
+    #[test]
+    fn chained_transformations_must_be_applied_in_reverse_order() {
+        let p = Point::new(1.0, 0.0, 1.0);
+        let a = Matrix4f::rotate_around_x(Degree(90.0).into());
+        let b = Matrix4f::scale_raw(5.0, 5.0, 5.0);
+        let c = Matrix4f::translate_raw(10.0, 5.0, 7.0);
+
+        let transform = c * b * a;
+        assert_fuzzy_eq!(transform * p, Point::new(15.0, 0.0, 7.0));
     }
 }
