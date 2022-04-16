@@ -1,6 +1,6 @@
 use std::ops;
 
-use super::ThreePart;
+use super::{FuzzyPartialEq, ThreePart};
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Vector(pub ThreePart);
@@ -25,6 +25,14 @@ impl Vector {
 
     pub fn normalize(&self) -> Vector {
         *self / self.magnitude()
+    }
+}
+
+impl FuzzyPartialEq<Self> for Vector {
+    fn fuzzy_eq(self, other: Self) -> bool {
+        let Vector(self_part) = self;
+        let Vector(other_part) = other;
+        self_part.fuzzy_eq(other_part)
     }
 }
 

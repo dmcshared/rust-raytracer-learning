@@ -247,6 +247,74 @@ impl<const WIDTH: usize, const WIDTHHEIGHT: usize, const HEIGHT: usize>
     }
 }
 
+impl<const WIDTH: usize, const HEIGHT: usize> ops::Mul<f64> for Matrix<WIDTH, HEIGHT> {
+    type Output = Self;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        let mut m = Self::Output::new();
+
+        for y in 0..HEIGHT {
+            for x in 0..WIDTH {
+                m.set_position(x, y, self.get_position(x, y) * rhs);
+            }
+        }
+
+        m
+    }
+}
+
+impl<const WIDTH: usize, const HEIGHT: usize> ops::Div<f64> for Matrix<WIDTH, HEIGHT> {
+    type Output = Self;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        let mut m = Self::Output::new();
+
+        for y in 0..HEIGHT {
+            for x in 0..WIDTH {
+                m.set_position(x, y, self.get_position(x, y) / rhs);
+            }
+        }
+
+        m
+    }
+}
+
+impl<const WIDTH: usize, const HEIGHT: usize> ops::Add<Matrix<WIDTH, HEIGHT>>
+    for Matrix<WIDTH, HEIGHT>
+{
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let mut m = Self::Output::new();
+
+        for y in 0..HEIGHT {
+            for x in 0..WIDTH {
+                m.set_position(x, y, self.get_position(x, y) + rhs.get_position(x, y));
+            }
+        }
+
+        m
+    }
+}
+
+impl<const WIDTH: usize, const HEIGHT: usize> ops::Sub<Matrix<WIDTH, HEIGHT>>
+    for Matrix<WIDTH, HEIGHT>
+{
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let mut m = Self::Output::new();
+
+        for y in 0..HEIGHT {
+            for x in 0..WIDTH {
+                m.set_position(x, y, self.get_position(x, y) - rhs.get_position(x, y));
+            }
+        }
+
+        m
+    }
+}
+
 // impl direct matrix * point and matrix * vector to avoid (dangerous?) conversions
 impl ops::Mul<Point> for Matrix4f {
     type Output = Point;

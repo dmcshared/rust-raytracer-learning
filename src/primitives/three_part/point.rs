@@ -1,6 +1,6 @@
 use std::ops;
 
-use super::ThreePart;
+use super::{FuzzyPartialEq, ThreePart};
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point(pub ThreePart);
@@ -11,6 +11,14 @@ impl Point {
     }
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Point(ThreePart(x, y, z, 1.0))
+    }
+}
+
+impl FuzzyPartialEq<Self> for Point {
+    fn fuzzy_eq(self, other: Self) -> bool {
+        let Point(self_part) = self;
+        let Point(other_part) = other;
+        self_part.fuzzy_eq(other_part)
     }
 }
 

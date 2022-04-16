@@ -1,6 +1,13 @@
-use crate::primitives::three_part::{point::Point, vector::Vector};
-
 use super::Matrix4f;
+use crate::{
+    assert_fuzzy_eq,
+    primitives::{
+        matrix::{ColumnVector, RowVector},
+        rotation::Rotation,
+        three_part::{point::Point, vector::Vector},
+    },
+    util::fuzzy_comparison::FuzzyPartialEq,
+};
 
 impl Matrix4f {
     pub fn translate(vec: Vector) -> Matrix4f {
@@ -36,9 +43,98 @@ impl Matrix4f {
     }
 }
 
+impl Matrix4f {
+    pub fn cross_product(vec: Vector) -> Matrix4f {
+        Matrix4f::cross_product_raw(vec.0 .0, vec.0 .1, vec.0 .2)
+    }
+
+    pub fn cross_product_raw(x: f64, y: f64, z: f64) -> Matrix4f {
+        Self::new_with_data([
+            [0.0, -z, y, 0.0],
+            [z, 0.0, -x, 0.0],
+            [-y, x, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
+}
+
+impl Matrix4f {
+    pub fn rotate_around(axis: Vector, angle: Rotation) -> Matrix4f {
+        Matrix4f::rotate_around_raw(axis.0 .0, axis.0 .1, axis.0 .2, angle)
+    }
+
+    pub fn rotate_around_raw(x: f64, y: f64, z: f64, angle: Rotation) -> Matrix4f {
+        assert_fuzzy_eq!(x * x + y * y + z * z, 1.0);
+
+        let c = angle.val.cos();
+        let s = angle.val.sin();
+        let i = Self::identity();
+        let t = 1.0 - c;
+        let u = Vector::new(x, y, z);
+        let cu = Matrix4f::cross_product(u);
+        // with u = (x, y, z); o = u * u_T
+        let o = ColumnVector::from(u) * ColumnVector::from(u).transpose();
+
+        i * c + cu * s + o * t
+    }
+
+    pub fn rotate_around_x(angle: Rotation) -> Matrix4f {
+        Matrix4f::rotate_around_x_raw(angle.val)
+    }
+
+    pub fn rotate_around_x_raw(angle: f64) -> Matrix4f {
+        Matrix4f::new_with_data([
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, angle.cos(), -angle.sin(), 0.0],
+            [0.0, angle.sin(), angle.cos(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
+
+    pub fn rotate_around_y(angle: Rotation) -> Matrix4f {
+        Matrix4f::rotate_around_y_raw(angle.val)
+    }
+
+    pub fn rotate_around_y_raw(angle: f64) -> Matrix4f {
+        Matrix4f::new_with_data([
+            [angle.cos(), 0.0, angle.sin(), 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [-angle.sin(), 0.0, angle.cos(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
+
+    pub fn rotate_around_z(angle: Rotation) -> Matrix4f {
+        Matrix4f::rotate_around_z_raw(angle.val)
+    }
+
+    pub fn rotate_around_z_raw(angle: f64) -> Matrix4f {
+        Matrix4f::new_with_data([
+            [angle.cos(), -angle.sin(), 0.0, 0.0],
+            [angle.sin(), angle.cos(), 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
+
+    // pub fn rotate_around_x( angle: Rotation) -> Matrix4f {
+    //     Matrix4f::rotate_around(Vector::new(1.0, 0.0, 0.0), angle)
+    // }
+
+    // pub fn rotate_around_y( angle: Rotation) -> Matrix4f {
+    //     Matrix4f::rotate_around(Vector::new(0.0, 1.0, 0.0), angle)
+    // }
+
+    // pub fn rotate_around_z( angle: Rotation) -> Matrix4f {
+    //     Matrix4f::rotate_around(Vector::new(0.0, 0.0, 1.0), angle)
+    // }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::primitives::{matrix::ColumnVector, three_part::point::Point};
+    use crate::primitives::{
+        matrix::ColumnVector, rotation::degrees::Degree, three_part::point::Point,
+    };
 
     use super::*;
 
@@ -99,6 +195,78 @@ mod tests {
         let test_point = Point::new(4.0, 5.0, 6.0);
 
         let expected_point = Point::new(3.0, 3.0, 3.0);
+
+        let transformed_point = result * test_point;
+
+        assert_eq!(transformed_point, expected_point);
+    }
+
+    #[test]
+    fn create_and_apply_general_rotate_x_to_vector() {
+        let result = Matrix4f::rotate_around(Vector::new(1.0, 0.0, 0.0), Degree(90.0).into());
+        let test_point = Vector::new(0.0, 1.0, 0.0);
+
+        let expected_point = Vector::new(0.0, 0.0, 1.0);
+
+        let transformed_point = result * test_point;
+
+        assert_eq!(transformed_point, expected_point);
+    }
+
+    #[test]
+    fn create_and_apply_rotate_x_to_vector() {
+        let result = Matrix4f::rotate_around_x(Degree(90.0).into());
+        let test_point = Vector::new(0.0, 1.0, 0.0);
+
+        let expected_point = Vector::new(0.0, 0.0, 1.0);
+
+        let transformed_point = result * test_point;
+
+        assert_eq!(transformed_point, expected_point);
+    }
+
+    #[test]
+    fn create_and_apply_general_rotate_y_to_vector() {
+        let result = Matrix4f::rotate_around(Vector::new(0.0, 1.0, 0.0), Degree(90.0).into());
+        let test_point = Vector::new(1.0, 0.0, 0.0);
+
+        let expected_point = Vector::new(0.0, 0.0, -1.0);
+
+        let transformed_point = result * test_point;
+
+        assert_eq!(transformed_point, expected_point);
+    }
+
+    #[test]
+    fn create_and_apply_rotate_y_to_vector() {
+        let result = Matrix4f::rotate_around_y(Degree(90.0).into());
+        let test_point = Vector::new(1.0, 0.0, 0.0);
+
+        let expected_point = Vector::new(0.0, 0.0, -1.0);
+
+        let transformed_point = result * test_point;
+
+        assert_eq!(transformed_point, expected_point);
+    }
+
+    #[test]
+    fn create_and_apply_general_rotate_z_to_vector() {
+        let result = Matrix4f::rotate_around(Vector::new(0.0, 0.0, 1.0), Degree(90.0).into());
+        let test_point = Vector::new(0.0, 1.0, 0.0);
+
+        let expected_point = Vector::new(-1.0, 0.0, 0.0);
+
+        let transformed_point = result * test_point;
+
+        assert_eq!(transformed_point, expected_point);
+    }
+
+    #[test]
+    fn create_and_apply_rotate_z_to_vector() {
+        let result = Matrix4f::rotate_around_z(Degree(90.0).into());
+        let test_point = Vector::new(0.0, 1.0, 0.0);
+
+        let expected_point = Vector::new(-1.0, 0.0, 0.0);
 
         let transformed_point = result * test_point;
 
