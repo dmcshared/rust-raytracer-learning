@@ -29,29 +29,15 @@ impl Canvas {
     pub fn set_color_at(&mut self, x: usize, y: usize, color: ColorRGBA) {
         self.pixels[y * self.width + x] = color;
     }
-}
 
-impl From<Canvas> for PPMP3Image {
-    fn from(canvas: Canvas) -> Self {
-        let mut out = Self::new(canvas.width, canvas.height);
+    pub fn as_bytes(&self) -> Vec<u8> {
+        let mut bytes: Vec<u8> = Vec::new();
 
-        for (pos, pixel) in canvas.pixels.iter().enumerate() {
-            out.set_color_at(pos % canvas.width, pos / canvas.width, *pixel);
-        }
+        let color_data: Vec<u8> = self.pixels.iter().flat_map(|c| (*c).as_bytes()).collect();
 
-        out
-    }
-}
+        bytes.extend(color_data);
 
-impl From<Canvas> for PPMP7Image {
-    fn from(canvas: Canvas) -> Self {
-        let mut out = Self::new(canvas.width, canvas.height);
-
-        for (pos, pixel) in canvas.pixels.iter().enumerate() {
-            out.set_color_at(pos % canvas.width, pos / canvas.width, *pixel);
-        }
-
-        out
+        bytes
     }
 }
 
@@ -84,7 +70,7 @@ mod tests {
     #[test]
     fn constructing_ppm_header() {
         let c = Canvas::new(5, 3);
-        let ppm = PPMP3Image::from(c);
+        let ppm = PPMP3Image::from(&c);
         /* Header consisting of
          * Magic Number: P3
          * Width and Height: 5 3
@@ -98,7 +84,7 @@ mod tests {
     #[test]
     fn constructing_pam_header() {
         let c = Canvas::new(5, 3);
-        let ppm = PPMP7Image::from(c);
+        let ppm = PPMP7Image::from(&c);
         /* Header consisting of
          * Magic Number: P3
          * Width and Height: 5 3
@@ -115,7 +101,7 @@ mod tests {
     #[test]
     fn constructing_ppm_image() {
         let c = Canvas::new(5, 3);
-        let ppm = PPMP3Image::from(c);
+        let ppm = PPMP3Image::from(&c);
         /* Header consisting of
          * Magic Number: P3
          * Width and Height: 5 3
@@ -151,7 +137,7 @@ mod tests {
     #[test]
     fn constructing_pam_image() {
         let c = Canvas::new(5, 3);
-        let ppm = PPMP7Image::from(c);
+        let ppm = PPMP7Image::from(&c);
 
         let expected_image_header = String::from(
             r#"P7

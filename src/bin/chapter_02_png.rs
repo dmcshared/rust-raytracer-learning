@@ -5,7 +5,7 @@ use std::fs::write;
 use raytracer::{
     gfx::{
         canvas::Canvas,
-        image_formats::{ppm::PPMP3Image, Image},
+        image_formats::{png::PNGImage, ppm::PPMP3Image, Image},
         primitives::color::ColorRGBA,
     },
     primitives::three_part::{point::Point, vector::Vector},
@@ -103,9 +103,9 @@ fn main() {
     }
     println!("FINISHED => {}: {:?}", iteration, current);
 
-    println!("Writing ./output/ppm.ppm");
-    let ppm = PPMP3Image::from(&canvas);
-    write("./output/ppm.ppm", ppm.as_bytes()).expect("Could not write ppm.ppm to disk.");
+    println!("Writing ./output/png.png");
+    let ppm = PNGImage::from(&canvas);
+    write("./output/png.png", ppm.as_bytes()).expect("Could not write png.png to disk.");
 
     println!("Everything done.");
 }
