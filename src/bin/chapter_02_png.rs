@@ -5,7 +5,7 @@ use std::fs::write;
 use raytracer::{
     gfx::{
         canvas::Canvas,
-        image_formats::{png::PNGImage, ppm::PPMP3Image, Image},
+        image_formats::{png::PNGImage, Image},
         primitives::color::ColorRGBA,
     },
     primitives::three_part::{point::Point, vector::Vector},

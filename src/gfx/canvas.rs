@@ -1,10 +1,4 @@
-use super::{
-    image_formats::{
-        ppm::{PPMP3Image, PPMP7Image},
-        Image,
-    },
-    primitives::color::ColorRGBA,
-};
+use super::primitives::color::ColorRGBA;
 
 pub struct Canvas {
     pub width: usize,
@@ -45,6 +39,11 @@ impl Canvas {
 mod tests {
 
     use super::*;
+
+    use super::super::image_formats::{
+        ppm::{PPMP3Image, PPMP7Image},
+        Image,
+    };
 
     #[test]
     fn create_a_canvas_and_check_empty_initialized() {

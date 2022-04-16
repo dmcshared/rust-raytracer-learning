@@ -1,4 +1,4 @@
-use super::{canvas::Canvas, primitives::color::ColorRGBA};
+use super::canvas::Canvas;
 
 pub mod png;
 pub mod ppm;

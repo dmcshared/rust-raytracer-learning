@@ -2,7 +2,7 @@ use super::Matrix4f;
 use crate::{
     assert_fuzzy_eq,
     primitives::{
-        matrix::{ColumnVector, RowVector},
+        matrix::ColumnVector,
         rotation::Rotation,
         three_part::{point::Point, vector::Vector},
     },

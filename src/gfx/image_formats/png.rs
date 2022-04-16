@@ -1,4 +1,4 @@
-use super::{Canvas, ColorRGBA};
+use super::Canvas;
 
 use super::Image;
 
