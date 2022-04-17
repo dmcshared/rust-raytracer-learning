@@ -1,4 +1,4 @@
-use std::ops;
+use std::{fmt::Display, ops};
 
 use crate::util::fuzzy_comparison::{f64_fuzzy_eq, FuzzyPartialEq};
 
@@ -26,6 +26,12 @@ use super::mix_modes::MixMode;
 /// ```
 #[derive(Debug, Clone, Copy)]
 pub struct ColorRGBA(pub f64, pub f64, pub f64, pub f64);
+
+impl Display for ColorRGBA {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {}, {}, {})", self.0, self.1, self.2, self.3)
+    }
+}
 
 pub mod default_palettes {
     use super::ColorRGBA;
@@ -138,6 +144,10 @@ impl ColorRGBA {
             (self.3.clamp(0.0, 1.0) * 255.0) as u8,
         ]
         .to_vec()
+    }
+
+    pub fn intensify(&self) -> ColorRGBA {
+        ColorRGBA(self.0 * self.3, self.1 * self.3, self.2 * self.3, self.3)
     }
 }
 

@@ -31,7 +31,10 @@ impl Light for PointLight {
         //     0.0
         // }
         if cosine > 0.0 {
-            self.intensity.mul_all(cosine / (distance * distance))
+            self.intensity
+                .intensify()
+                .mul_all(cosine / (distance * distance))
+            // self.intensity.mul_all(cosine)
         } else {
             ColorRGBA::blank()
         }

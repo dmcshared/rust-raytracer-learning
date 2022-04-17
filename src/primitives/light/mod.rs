@@ -5,12 +5,18 @@ use crate::gfx::primitives::color::ColorRGBA;
 
 use super::ray::Ray;
 
-pub trait Light {
+pub trait Light: Sync {
     fn light_effectiveness(&self, r: Ray) -> ColorRGBA;
 }
 
 pub struct Lights {
     pub lights: Vec<Box<dyn Light>>,
+}
+
+impl Lights {
+    pub fn new(lights: Vec<Box<dyn Light>>) -> Self {
+        Self { lights }
+    }
 }
 
 impl Light for Lights {

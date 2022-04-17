@@ -1,6 +1,7 @@
 use crate::{
     gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
     primitives::{
+        intersection::Intersection,
         light::{Light, Lights},
         ray::Ray,
     },
@@ -30,7 +31,7 @@ impl Default for Phong {
 impl Material for Phong {
     fn render(
         &self,
-        intersection: crate::primitives::intersection::Intersection,
+        intersection: &Intersection,
         lights: &Lights,
     ) -> crate::gfx::primitives::color::ColorRGBA {
         let light_dot_normal =
@@ -62,7 +63,13 @@ impl Material for Phong {
             (light_dot_normal.mix(self.diffuse, MixMode::Mul), specular)
         };
 
-        self.ambient + diffuse + specular
+        // self.ambient + diffuse + specular
+        // specular
+        // diffuse
+
+        self.ambient
+            .mix(diffuse, MixMode::Alpha)
+            .mix(specular, MixMode::Alpha)
     }
 }
 
