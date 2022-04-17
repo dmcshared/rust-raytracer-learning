@@ -1,6 +1,6 @@
 use std::ops;
 
-use crate::util::fuzzy_comparison::f64_fuzzy_eq;
+use crate::util::fuzzy_comparison::{f64_fuzzy_eq, FuzzyPartialEq};
 
 use super::mix_modes::MixMode;
 
@@ -50,6 +50,15 @@ impl ColorRGBA {
 
     pub fn invert(&self) -> ColorRGBA {
         ColorRGBA(1.0 - self.0, 1.0 - self.1, 1.0 - self.2, self.3)
+    }
+
+    pub fn mul_all(&self, other: f64) -> ColorRGBA {
+        ColorRGBA(
+            self.0 * other,
+            self.1 * other,
+            self.2 * other,
+            self.3 * other,
+        )
     }
 
     pub fn mix(&self, other: ColorRGBA, mode: MixMode) -> ColorRGBA {
@@ -177,7 +186,12 @@ impl ops::Add for ColorRGBA {
     type Output = ColorRGBA;
 
     fn add(self, rhs: ColorRGBA) -> Self::Output {
-        ColorRGBA::new(self.0 + rhs.0, self.1 + rhs.1, self.2 + rhs.2, self.3)
+        ColorRGBA::new(
+            self.0 + rhs.0,
+            self.1 + rhs.1,
+            self.2 + rhs.2,
+            self.3 + rhs.3,
+        )
     }
 }
 
@@ -185,7 +199,12 @@ impl ops::Sub for ColorRGBA {
     type Output = ColorRGBA;
 
     fn sub(self, rhs: ColorRGBA) -> Self::Output {
-        ColorRGBA::new(self.0 - rhs.0, self.1 - rhs.1, self.2 - rhs.2, self.3)
+        ColorRGBA::new(
+            self.0 - rhs.0,
+            self.1 - rhs.1,
+            self.2 - rhs.2,
+            self.3 - rhs.3,
+        )
     }
 }
 
@@ -193,7 +212,7 @@ impl ops::Mul<f64> for ColorRGBA {
     type Output = ColorRGBA;
 
     fn mul(self, rhs: f64) -> Self::Output {
-        ColorRGBA::new(self.0 * rhs, self.1 * rhs, self.2 * rhs, self.3)
+        ColorRGBA::new(self.0 * rhs, self.1 * rhs, self.2 * rhs, self.3 * rhs)
     }
 }
 
@@ -201,12 +220,21 @@ impl ops::Div<f64> for ColorRGBA {
     type Output = ColorRGBA;
 
     fn div(self, rhs: f64) -> Self::Output {
-        ColorRGBA::new(self.0 / rhs, self.1 / rhs, self.2 / rhs, self.3)
+        ColorRGBA::new(self.0 / rhs, self.1 / rhs, self.2 / rhs, self.3 / rhs)
     }
 }
 
 impl PartialEq for ColorRGBA {
     fn eq(&self, other: &ColorRGBA) -> bool {
+        f64_fuzzy_eq(self.0, other.0)
+            && f64_fuzzy_eq(self.1, other.1)
+            && f64_fuzzy_eq(self.2, other.2)
+            && f64_fuzzy_eq(self.3, other.3)
+    }
+}
+
+impl FuzzyPartialEq<ColorRGBA> for ColorRGBA {
+    fn fuzzy_eq(self, other: ColorRGBA) -> bool {
         f64_fuzzy_eq(self.0, other.0)
             && f64_fuzzy_eq(self.1, other.1)
             && f64_fuzzy_eq(self.2, other.2)

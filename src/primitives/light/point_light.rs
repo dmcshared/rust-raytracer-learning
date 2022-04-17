@@ -20,7 +20,7 @@ impl PointLight {
 }
 
 impl Light for PointLight {
-    fn light_effectiveness(&self, r: Ray) -> f64 {
+    fn light_effectiveness(&self, r: Ray) -> ColorRGBA {
         let direction = self.position - r.origin;
         let distance = direction.magnitude();
         let direction = direction.normalize();
@@ -30,11 +30,11 @@ impl Light for PointLight {
         // } else {
         //     0.0
         // }
-        cosine / (distance * distance)
-    }
-
-    fn get_color(&self) -> ColorRGBA {
-        self.intensity
+        if cosine > 0.0 {
+            self.intensity.mul_all(cosine / (distance * distance))
+        } else {
+            ColorRGBA::blank()
+        }
     }
 }
 
@@ -60,10 +60,10 @@ mod tests {
         let l = PointLight::new(position, intensity);
 
         let r = Ray::new(Point::new(0.0, 0.0, -1.0), Vector::new(0.0, 0.0, 1.0));
-        assert_eq!(l.light_effectiveness(r), 1.0);
+        assert_eq!(l.light_effectiveness(r), intensity.mul_all(1.0));
         let r = Ray::new(Point::new(0.0, 0.0, -1.0), Vector::new(0.0, 1.0, 0.0));
-        assert_eq!(l.light_effectiveness(r), 0.0);
+        assert_eq!(l.light_effectiveness(r), intensity.mul_all(0.0));
         let r = Ray::new(Point::new(0.0, 0.0, -1.0), Vector::new(0.0, 0.0, -1.0));
-        assert_eq!(l.light_effectiveness(r), -1.0);
+        assert_eq!(l.light_effectiveness(r), intensity.mul_all(0.0));
     }
 }

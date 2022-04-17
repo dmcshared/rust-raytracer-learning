@@ -1,8 +1,5 @@
-use crate::{
-    primitives::{
-        intersection::Intersection, matrix::Matrix4f, ray::Ray, three_part::point::Point,
-    },
-    util::Defaultable,
+use crate::primitives::{
+    intersection::Intersection, matrix::Matrix4f, ray::Ray, three_part::point::Point,
 };
 
 use super::{Body, BodyBuilder};
@@ -20,7 +17,7 @@ where
 impl<T> TransformedBody<T>
 where
     T: Body,
-    T: Defaultable,
+    T: Default,
 {
     pub fn new(transformation: Matrix4f) -> Self {
         Self::new_with_body(transformation, T::default())
@@ -89,10 +86,10 @@ where
     }
 }
 
-impl<T> Defaultable for TransformedBody<T>
+impl<T> Default for TransformedBody<T>
 where
     T: Body,
-    T: Defaultable,
+    T: Default,
 {
     fn default() -> Self {
         Self::new(Matrix4f::identity())

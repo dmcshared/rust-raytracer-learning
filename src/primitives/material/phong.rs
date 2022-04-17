@@ -1,4 +1,10 @@
-use crate::{gfx::primitives::color::ColorRGBA, util::Defaultable};
+use crate::{
+    gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
+    primitives::{
+        light::{Light, Lights},
+        ray::Ray,
+    },
+};
 
 use super::Material;
 
@@ -10,7 +16,7 @@ pub struct Phong {
     pub shininess: f64,
 }
 
-impl Defaultable for Phong {
+impl Default for Phong {
     fn default() -> Self {
         Self {
             ambient: ColorRGBA::new(0.1, 0.1, 0.1, 1.0),
@@ -25,8 +31,38 @@ impl Material for Phong {
     fn render(
         &self,
         intersection: crate::primitives::intersection::Intersection,
+        lights: &Lights,
     ) -> crate::gfx::primitives::color::ColorRGBA {
-        todo!("Render the Phong material")
+        let light_dot_normal =
+            lights.light_effectiveness(Ray::new(intersection.world_pos, intersection.world_normal));
+
+        let (diffuse, specular) = if light_dot_normal.3 <= 0.0 {
+            (ColorRGBA::blank(), ColorRGBA::blank())
+        } else {
+            let reflectv = Ray::new(
+                intersection.world_pos,
+                intersection
+                    .ray
+                    .direction
+                    .reflect_across(intersection.world_normal),
+            );
+            let reflect_dot_light = lights.light_effectiveness(reflectv);
+
+            let specular = if reflect_dot_light.3 <= 0.0 {
+                ColorRGBA::blank()
+            } else {
+                let mut factor = reflect_dot_light;
+                factor.0 = factor.0.powf(self.shininess);
+                factor.1 = factor.1.powf(self.shininess);
+                factor.2 = factor.2.powf(self.shininess);
+                factor.3 = factor.3.powf(self.shininess);
+                factor.mix(self.specular, MixMode::Mul)
+            };
+
+            (light_dot_normal.mix(self.diffuse, MixMode::Mul), specular)
+        };
+
+        self.ambient + diffuse + specular
     }
 }
 

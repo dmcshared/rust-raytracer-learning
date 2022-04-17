@@ -1,8 +1,5 @@
-use crate::{
-    primitives::{
-        intersection::Intersection, material::Material, ray::Ray, three_part::point::Point,
-    },
-    util::Defaultable,
+use crate::primitives::{
+    intersection::Intersection, material::Material, ray::Ray, three_part::point::Point,
 };
 
 use super::{transform::TransformedBody, Body, BodyBuilder};
@@ -60,7 +57,7 @@ impl BodyBuilder for RawSphere {
     }
 }
 
-impl Defaultable for RawSphere {
+impl Default for RawSphere {
     fn default() -> Self {
         RawSphere {
             material: Box::new(crate::primitives::material::Default::default()),

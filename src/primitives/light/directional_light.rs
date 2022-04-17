@@ -20,7 +20,7 @@ impl DirectionalLight {
 }
 
 impl Light for DirectionalLight {
-    fn light_effectiveness(&self, r: Ray) -> f64 {
+    fn light_effectiveness(&self, r: Ray) -> ColorRGBA {
         let direction = self.direction;
         let cosine = -(r.direction * direction);
         // if cosine > 0.0 {
@@ -28,11 +28,11 @@ impl Light for DirectionalLight {
         // } else {
         //     0.0
         // }
-        cosine
-    }
-
-    fn get_color(&self) -> ColorRGBA {
-        self.intensity
+        if cosine > 0.0 {
+            self.intensity.mul_all(cosine)
+        } else {
+            ColorRGBA::blank()
+        }
     }
 }
 
@@ -63,9 +63,9 @@ mod tests {
         let l = DirectionalLight::new(direction, intensity);
 
         let r = Ray::new(Point::new(2.0, 7.0, 4.0), Vector::new(0.0, 1.0, 0.0));
-        assert_eq!(l.light_effectiveness(r), 1.0);
+        assert_eq!(l.light_effectiveness(r), intensity);
         let r = Ray::new(Point::new(98.0, 4.0, 6.0), Vector::new(0.0, 1.0, 0.0));
-        assert_eq!(l.light_effectiveness(r), 1.0);
+        assert_eq!(l.light_effectiveness(r), intensity);
     }
 
     #[test]
@@ -76,6 +76,9 @@ mod tests {
         let l = DirectionalLight::new(direction, intensity);
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 1.0));
-        assert_fuzzy_eq!(l.light_effectiveness(r), (2.0 as f64).sqrt() / 2.0);
+        assert_fuzzy_eq!(
+            l.light_effectiveness(r),
+            intensity * ((2.0 as f64).sqrt() / 2.0)
+        );
     }
 }

@@ -7,6 +7,7 @@ use super::{
 pub struct Intersection {
     pub t: f64,
     pub object: Box<dyn Body>,
+    pub ray: Ray,
     pub world_pos: Point,
     pub world_normal: Vector,
 }
@@ -18,6 +19,7 @@ impl Intersection {
             world_pos: ray.at(t),
             world_normal: object.normal(ray.at(t)),
             object,
+            ray,
         }
     }
 }
