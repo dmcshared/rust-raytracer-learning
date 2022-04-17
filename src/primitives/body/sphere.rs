@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::primitives::{
     intersection::Intersection, material::Material, ray::Ray, three_part::point::Point,
 };
@@ -6,13 +8,13 @@ use super::{transform::TransformedBody, Body, BodyBuilder};
 
 #[derive(Debug)]
 pub struct RawSphere {
-    pub material: Box<dyn Material>,
+    pub material: Arc<dyn Material>,
 }
 
 impl Clone for RawSphere {
     fn clone(&self) -> Self {
         Self {
-            material: dyn_clone::clone_box(&*self.material),
+            material: self.material.clone(),
         }
     }
 }
@@ -31,13 +33,13 @@ impl Body for RawSphere {
             vec![]
         } else if discriminant == 0.0 {
             let t = -b / (2.0 * a);
-            vec![Intersection::new(t, Box::new((*self).clone()), *ray)]
+            vec![Intersection::new(t, Arc::new((*self).clone()), *ray)]
         } else {
             let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
             let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
             vec![
-                Intersection::new(t1, Box::new((*self).clone()), *ray),
-                Intersection::new(t2, Box::new((*self).clone()), *ray),
+                Intersection::new(t1, Arc::new((*self).clone()), *ray),
+                Intersection::new(t2, Arc::new((*self).clone()), *ray),
             ]
         }
     }
@@ -46,13 +48,13 @@ impl Body for RawSphere {
         (Point::new(x, y, z) - Point::origin()).normalize()
     }
 
-    fn get_material(&self) -> Box<dyn crate::primitives::material::Material> {
-        dyn_clone::clone_box(&*self.material)
+    fn get_material(&self) -> Arc<dyn crate::primitives::material::Material> {
+        self.material.clone()
     }
 }
 
 impl BodyBuilder for RawSphere {
-    fn with_material(&self, material: Box<dyn Material>) -> Self {
+    fn with_material(&self, material: Arc<dyn Material>) -> Self {
         RawSphere { material }
     }
 }
@@ -60,7 +62,7 @@ impl BodyBuilder for RawSphere {
 impl Default for RawSphere {
     fn default() -> Self {
         RawSphere {
-            material: Box::new(crate::primitives::material::Default::default()),
+            material: Arc::new(crate::primitives::material::Default::default()),
         }
     }
 }

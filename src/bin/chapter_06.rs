@@ -17,7 +17,7 @@ use raytracer::{
         three_part::point::Point,
     },
 };
-use std::{fs::write, sync::Mutex};
+use std::{fs::write, sync::Arc, sync::Mutex};
 
 fn main() {
     let ray_origin = Point::new(0.0, 0.0, -5.0);
@@ -30,18 +30,18 @@ fn main() {
         .with_diffuse(ColorRGBA::new(0.5, 0.5, 0.5, 1.0))
         .with_shininess(30.0);
 
-    let sphere = Sphere::new(Matrix4f::identity()).with_material(Box::new(material));
+    let sphere = Sphere::new(Matrix4f::identity()).with_material(Arc::new(material));
 
     let lights = Lights::new(vec![
-        Box::new(PointLight::new(
+        Arc::new(PointLight::new(
             Point::new(-10.0, 10.0, -10.0),
             ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
         )),
-        // Box::new(PointLight::new(
+        // Arc::new(PointLight::new(
         //     Point::new(-10.0, 10.0, -10.0),
         //     ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
         // )),
-        // Box::new(PointLight::new(
+        // Arc::new(PointLight::new(
         //     Point::new(10.0, 10.0, -10.0),
         //     ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
         // )),

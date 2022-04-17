@@ -1,21 +1,23 @@
 pub mod directional_light;
 pub mod point_light;
 
+use std::sync::Arc;
+
 use crate::gfx::primitives::color::ColorRGBA;
 
 use super::ray::Ray;
 
-pub trait Light: Sync {
+pub trait Light: Sync + Send {
     fn light_effectiveness(&self, r: Ray) -> ColorRGBA;
     fn light_effectiveness_exp(&self, r: Ray, shininess: f64) -> ColorRGBA;
 }
 
 pub struct Lights {
-    pub lights: Vec<Box<dyn Light>>,
+    pub lights: Vec<Arc<dyn Light>>,
 }
 
 impl Lights {
-    pub fn new(lights: Vec<Box<dyn Light>>) -> Self {
+    pub fn new(lights: Vec<Arc<dyn Light>>) -> Self {
         Self { lights }
     }
 }

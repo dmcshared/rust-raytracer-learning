@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::primitives::{
     intersection::Intersection, matrix::Matrix4f, ray::Ray, three_part::point::Point,
 };
@@ -67,7 +69,7 @@ where
         (self.transpose_inverse_transformation * local_normal).normalize()
     }
 
-    fn get_material(&self) -> Box<dyn crate::primitives::material::Material> {
+    fn get_material(&self) -> Arc<dyn crate::primitives::material::Material> {
         self.raw_body.get_material()
     }
 }
@@ -79,7 +81,7 @@ where
 {
     fn with_material(
         &self,
-        material: Box<dyn crate::primitives::material::Material>,
+        material: Arc<dyn crate::primitives::material::Material>,
     ) -> TransformedBody<T> {
         TransformedBody::<T>::new_with_body(
             self.transformation,

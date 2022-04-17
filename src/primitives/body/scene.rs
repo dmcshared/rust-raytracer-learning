@@ -5,7 +5,7 @@
 
 // #[derive(Debug)]
 // pub struct Scene {
-//     pub bodies: Vec<Box<dyn Body>>,
+//     pub bodies: Vec<Arc<dyn Body>>,
 // }
 
 // impl Clone for Scene {
@@ -33,7 +33,7 @@
 //         todo!()
 //     }
 
-//     fn get_material(&self) -> Box<dyn crate::primitives::material::Material> {
+//     fn get_material(&self) -> Arc<dyn crate::primitives::material::Material> {
 //         todo!()
 //     }
 // }
