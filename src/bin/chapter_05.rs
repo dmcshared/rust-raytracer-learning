@@ -1,6 +1,6 @@
 use indicatif::ProgressBar;
 use itertools::Itertools;
-use rayon::iter::{IntoParallelIterator, ParallelBridge, ParallelIterator};
+use rayon::iter::{ParallelBridge, ParallelIterator};
 use raytracer::{
     gfx::{
         canvas::Canvas,

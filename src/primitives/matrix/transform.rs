@@ -117,6 +117,15 @@ impl Matrix4f {
         ])
     }
 
+    pub fn fix_transform(&self) -> Matrix4f {
+        let mut mat = *self;
+        mat.data[3][0] = 0.0;
+        mat.data[3][1] = 0.0;
+        mat.data[3][2] = 0.0;
+        mat.data[3][3] = 1.0;
+        mat
+    }
+
     // pub fn rotate_around_x( angle: Rotation) -> Matrix4f {
     //     Matrix4f::rotate_around(Vector::new(1.0, 0.0, 0.0), angle)
     // }

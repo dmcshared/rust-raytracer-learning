@@ -19,25 +19,23 @@ impl Body for RawSphere {
             vec![]
         } else if discriminant == 0.0 {
             let t = -b / (2.0 * a);
-            vec![Intersection::new(t, Box::new(*self))]
+            vec![Intersection::new(t, Box::new(*self), *ray)]
         } else {
             let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
             let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
             vec![
-                Intersection {
-                    t: t1,
-                    object: Box::new(*self),
-                },
-                Intersection {
-                    t: t2,
-                    object: Box::new(*self),
-                },
+                Intersection::new(t1, Box::new(*self), *ray),
+                Intersection::new(t2, Box::new(*self), *ray),
             ]
         }
     }
 
     fn default() -> Self {
         RawSphere {}
+    }
+
+    fn normal_raw(&self, x: f64, y: f64, z: f64) -> crate::primitives::three_part::vector::Vector {
+        (Point::new(x, y, z) - Point::origin()).normalize()
     }
 }
 
@@ -47,7 +45,8 @@ pub type Sphere = TransformedBody<RawSphere>;
 mod tests {
     use super::*;
     use crate::primitives::{
-        intersection::IntersectionList, matrix::Matrix4f, three_part::vector::Vector,
+        intersection::IntersectionList, matrix::Matrix4f, rotation::degrees::Degree,
+        three_part::vector::Vector,
     };
     use crate::primitives::{ray::Ray, three_part::point::Point};
 
@@ -140,5 +139,38 @@ mod tests {
         );
         let xs = s.intersect(&r);
         assert_eq!(xs.len(), 0);
+    }
+
+    #[test]
+    fn normal_on_sphere_at_point_on_x_axis() {
+        let s = Sphere::new(Matrix4f::identity());
+        let n = s.normal(Point::new(1.0, 0.0, 0.0));
+        assert_eq!(n, Vector::new(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn normal_on_scaled_and_rotated_sphere() {
+        let s = Sphere::new(
+            Matrix4f::scale_raw(1.0, 0.5, 1.0) * Matrix4f::rotate_around_z(Degree(36.0).into()),
+        );
+        let sqrt2_over_2 = 2.0f64.sqrt() / 2.0;
+        let p = Point::new(0.0, sqrt2_over_2, -sqrt2_over_2);
+        let n = s.normal(p);
+
+        let expected_result = Vector::new(0.0, 0.97014, -0.24254);
+        assert_eq!(n, expected_result);
+    }
+
+    #[test]
+    fn normal_should_be_normalized() {
+        let s = Sphere::new(
+            Matrix4f::scale_raw(1.0, 0.5, 1.0) * Matrix4f::rotate_around_z(Degree(36.0).into()),
+        );
+        let sqrt2_over_2 = 2.0f64.sqrt() / 2.0;
+        let p = Point::new(0.0, sqrt2_over_2, -sqrt2_over_2);
+        let n = s.normal(p);
+
+        assert_eq!(n.sqr_magnitude(), 1.0);
+        assert_eq!(n, n.normalize());
     }
 }

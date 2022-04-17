@@ -1,3 +1,5 @@
+pub mod special_ops;
+
 use std::ops;
 
 use super::{FuzzyPartialEq, ThreePart};

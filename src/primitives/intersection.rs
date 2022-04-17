@@ -1,13 +1,24 @@
-use super::body::Body;
+use super::{
+    body::Body,
+    ray::Ray,
+    three_part::{point::Point, vector::Vector},
+};
 
 pub struct Intersection {
     pub t: f64,
     pub object: Box<dyn Body>,
+    pub world_pos: Point,
+    pub world_normal: Vector,
 }
 
 impl Intersection {
-    pub fn new(t: f64, object: Box<dyn Body>) -> Self {
-        Self { t, object }
+    pub fn new(t: f64, object: Box<dyn Body>, ray: Ray) -> Self {
+        Self {
+            t,
+            world_pos: ray.at(t),
+            world_normal: object.normal(ray.at(t)),
+            object,
+        }
     }
 }
 

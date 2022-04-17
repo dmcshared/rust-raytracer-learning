@@ -13,7 +13,10 @@ pub struct Ray {
 
 impl Ray {
     pub fn new(origin: Point, direction: Vector) -> Self {
-        Self { origin, direction }
+        Self {
+            origin,
+            direction: direction.normalize(),
+        }
     }
 
     pub fn at(&self, t: f64) -> Point {
@@ -52,7 +55,7 @@ mod tests {
         let direction = Vector::new(4.0, 5.0, 6.0);
         let r = Ray::new(origin, direction);
         assert_eq!(r.origin, origin);
-        assert_eq!(r.direction, direction);
+        assert_eq!(r.direction, direction.normalize());
     }
 
     #[test]
@@ -81,6 +84,6 @@ mod tests {
 
         let r2 = m * r;
         assert_eq!(r2.origin, Point::new(2.0, 6.0, 12.0));
-        assert_eq!(r2.direction, Vector::new(0.0, 3.0, 0.0));
+        assert_eq!(r2.direction, Vector::new(0.0, 1.0, 0.0));
     }
 }
