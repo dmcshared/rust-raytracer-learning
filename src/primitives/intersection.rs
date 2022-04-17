@@ -7,6 +7,7 @@ use super::{
 pub struct Intersection {
     pub t: f64,
     pub object: Box<dyn Body>,
+    pub top_level_object: Box<dyn Body>,
     pub ray: Ray,
     pub world_pos: Point,
     pub world_normal: Vector,
@@ -18,9 +19,15 @@ impl Intersection {
             t,
             world_pos: ray.at(t),
             world_normal: object.normal(ray.at(t)),
+            top_level_object: dyn_clone::clone_box(&*object),
             object,
             ray,
         }
+    }
+
+    pub fn with_top_level_object(mut self, object: Box<dyn Body>) -> Self {
+        self.top_level_object = object;
+        self
     }
 }
 

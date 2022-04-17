@@ -4,6 +4,7 @@ use crate::primitives::{
 
 use super::{Body, BodyBuilder};
 
+#[derive(Clone, Debug)]
 pub struct TransformedBody<T>
 where
     T: Body,
@@ -53,6 +54,7 @@ where
 impl<T> Body for TransformedBody<T>
 where
     T: Body,
+    T: Clone,
 {
     fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
         let local_ray = self.inverse_transformation * ray;

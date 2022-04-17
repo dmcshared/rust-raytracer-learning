@@ -28,19 +28,23 @@ fn main() {
 
     let material = Phong::default()
         .with_diffuse(ColorRGBA::new(0.5, 0.5, 0.5, 1.0))
-        .with_shininess(10.0);
+        .with_shininess(30.0);
 
     let sphere = Sphere::new(Matrix4f::identity()).with_material(Box::new(material));
 
     let lights = Lights::new(vec![
         Box::new(PointLight::new(
             Point::new(-10.0, 10.0, -10.0),
-            ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
+            ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
         )),
-        Box::new(PointLight::new(
-            Point::new(10.0, 10.0, -10.0),
-            ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
-        )),
+        // Box::new(PointLight::new(
+        //     Point::new(-10.0, 10.0, -10.0),
+        //     ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
+        // )),
+        // Box::new(PointLight::new(
+        //     Point::new(10.0, 10.0, -10.0),
+        //     ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
+        // )),
     ]);
 
     let canvas_width = canvas.width;

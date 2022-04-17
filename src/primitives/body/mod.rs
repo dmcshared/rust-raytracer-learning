@@ -1,3 +1,5 @@
+use dyn_clone::DynClone;
+
 use super::{
     intersection::Intersection,
     material::Material,
@@ -5,10 +7,12 @@ use super::{
     three_part::{point::Point, vector::Vector},
 };
 
+pub mod scene;
 pub mod sphere;
 pub mod transform;
+use std::fmt::Debug;
 
-pub trait Body {
+pub trait Body: Debug + DynClone + Sync {
     fn intersect(&self, ray: &Ray) -> Vec<Intersection>;
     fn normal_raw(&self, x: f64, y: f64, z: f64) -> Vector;
     fn normal(&self, p: Point) -> Vector {
