@@ -46,7 +46,9 @@ pub type Sphere = TransformedBody<RawSphere>;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::primitives::{matrix::Matrix4f, three_part::vector::Vector};
+    use crate::primitives::{
+        intersection::IntersectionList, matrix::Matrix4f, three_part::vector::Vector,
+    };
     use crate::primitives::{ray::Ray, three_part::point::Point};
 
     #[test]
@@ -114,5 +116,18 @@ mod tests {
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 2.0);
         assert_eq!(xs[1].t, 4.0);
+    }
+
+    #[test]
+    fn test_hit_method() {
+        let s = Sphere::new(Matrix4f::identity());
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let xs = s.intersect(&r);
+
+        let x = xs
+            .hit()
+            .expect("This should contain 2 intersections, so a hit should always exist.");
+
+        assert_eq!(x.t, 4.0);
     }
 }

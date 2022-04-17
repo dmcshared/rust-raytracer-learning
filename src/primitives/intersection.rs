@@ -11,7 +11,7 @@ impl Intersection {
     }
 }
 
-trait IntersectionList {
+pub trait IntersectionList {
     fn hit(&self) -> Option<&Intersection>;
     fn hit_assume_sorted(&self) -> Option<&Intersection>;
 }
