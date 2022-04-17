@@ -47,16 +47,12 @@ impl Material for Phong {
                     .direction
                     .reflect_across(intersection.world_normal),
             );
-            let reflect_dot_light = lights.light_effectiveness(reflectv);
+            let reflect_dot_light = lights.light_effectiveness_exp(reflectv, self.shininess);
 
             let specular = if reflect_dot_light.3 <= 0.0 {
                 ColorRGBA::blank()
             } else {
-                let mut factor = reflect_dot_light;
-                factor.0 = factor.0.powf(self.shininess);
-                factor.1 = factor.1.powf(self.shininess);
-                factor.2 = factor.2.powf(self.shininess);
-                factor.3 = factor.3.powf(self.shininess);
+                let factor = reflect_dot_light;
                 factor.mix(self.specular, MixMode::Mul)
             };
 

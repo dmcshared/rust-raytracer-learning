@@ -39,6 +39,22 @@ impl Light for PointLight {
             ColorRGBA::blank()
         }
     }
+
+    fn light_effectiveness_exp(&self, r: Ray, shininess: f64) -> ColorRGBA {
+        let direction = self.position - r.origin;
+        let distance = direction.magnitude();
+        let direction = direction.normalize();
+        let cosine = r.direction * direction;
+        if cosine > 0.0 {
+            self.intensity
+                .intensify()
+                .mul_all(cosine / (distance * distance))
+                .powf(shininess)
+            // self.intensity.mul_all(cosine)
+        } else {
+            ColorRGBA::blank()
+        }
+    }
 }
 
 #[cfg(test)]

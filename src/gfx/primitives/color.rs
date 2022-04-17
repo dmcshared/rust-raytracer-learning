@@ -149,6 +149,15 @@ impl ColorRGBA {
     pub fn intensify(&self) -> ColorRGBA {
         ColorRGBA(self.0 * self.3, self.1 * self.3, self.2 * self.3, self.3)
     }
+
+    pub fn powf(&self, shininess: f64) -> ColorRGBA {
+        ColorRGBA(
+            self.0.powf(shininess),
+            self.1.powf(shininess),
+            self.2.powf(shininess),
+            self.3.powf(shininess),
+        )
+    }
 }
 
 impl From<ColorHSLA> for ColorRGBA {

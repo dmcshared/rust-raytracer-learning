@@ -34,6 +34,16 @@ impl Light for DirectionalLight {
             ColorRGBA::blank()
         }
     }
+
+    fn light_effectiveness_exp(&self, r: Ray, shininess: f64) -> ColorRGBA {
+        let direction = self.direction;
+        let cosine = -(r.direction * direction);
+        if cosine > 0.0 {
+            self.intensity.mul_all(cosine).powf(shininess)
+        } else {
+            ColorRGBA::blank()
+        }
+    }
 }
 
 #[cfg(test)]
