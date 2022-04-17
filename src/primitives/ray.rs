@@ -30,6 +30,16 @@ impl ops::Mul<Ray> for Matrix4f {
     }
 }
 
+impl ops::Mul<&Ray> for Matrix4f {
+    type Output = Ray;
+
+    fn mul(self, ray: &Ray) -> Self::Output {
+        let origin = self * ray.origin;
+        let direction = self * ray.direction;
+        Ray::new(origin, direction)
+    }
+}
+
 #[cfg(test)]
 mod tests {
 

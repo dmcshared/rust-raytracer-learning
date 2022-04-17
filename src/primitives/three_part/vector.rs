@@ -20,7 +20,7 @@ impl Vector {
 
     pub fn sqr_magnitude(&self) -> f64 {
         let Vector(self_part) = self;
-        (self_part.0.powi(2) + self_part.1.powi(2) + self_part.2.powi(2)).sqrt()
+        self_part.0.powi(2) + self_part.1.powi(2) + self_part.2.powi(2)
     }
 
     pub fn normalize(&self) -> Vector {

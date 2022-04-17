@@ -1,3 +1,5 @@
+pub mod body;
+pub mod intersection;
 pub mod matrix;
 pub mod ray;
 pub mod rotation;

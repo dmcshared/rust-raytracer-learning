@@ -114,7 +114,7 @@ impl<const WIDTH: usize, const HEIGHT: usize> Matrix<WIDTH, HEIGHT> {
 
 // Square Matrices
 impl<const SIZE: usize> Matrix<SIZE, SIZE> {
-    fn identity() -> Self {
+    pub fn identity() -> Self {
         let mut out = Self::new();
 
         for p in 0..SIZE {
