@@ -1,3 +1,5 @@
+pub mod phong;
+
 use crate::gfx::primitives::color::ColorRGBA;
 
 use super::intersection::Intersection;

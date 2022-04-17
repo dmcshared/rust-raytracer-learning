@@ -1,4 +1,7 @@
-use crate::primitives::{intersection::Intersection, ray::Ray, three_part::point::Point};
+use crate::{
+    primitives::{intersection::Intersection, ray::Ray, three_part::point::Point},
+    util::Defaultable,
+};
 
 use super::{transform::TransformedBody, Body};
 
@@ -30,12 +33,14 @@ impl Body for RawSphere {
         }
     }
 
-    fn default() -> Self {
-        RawSphere {}
-    }
-
     fn normal_raw(&self, x: f64, y: f64, z: f64) -> crate::primitives::three_part::vector::Vector {
         (Point::new(x, y, z) - Point::origin()).normalize()
+    }
+}
+
+impl Defaultable for RawSphere {
+    fn default() -> Self {
+        RawSphere {}
     }
 }
 

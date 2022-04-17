@@ -1,5 +1,8 @@
-use crate::primitives::{
-    intersection::Intersection, matrix::Matrix4f, ray::Ray, three_part::point::Point,
+use crate::{
+    primitives::{
+        intersection::Intersection, matrix::Matrix4f, ray::Ray, three_part::point::Point,
+    },
+    util::Defaultable,
 };
 
 use super::Body;
@@ -17,6 +20,7 @@ where
 impl<T> TransformedBody<T>
 where
     T: Body,
+    T: Defaultable,
 {
     pub fn new(transformation: Matrix4f) -> Self {
         Self::new_with_body(transformation, T::default())
@@ -53,13 +57,19 @@ where
         self.raw_body.intersect(&local_ray)
     }
 
-    fn default() -> Self {
-        Self::new(Matrix4f::identity())
-    }
-
     fn normal_raw(&self, x: f64, y: f64, z: f64) -> crate::primitives::three_part::vector::Vector {
         let local_point = self.inverse_transformation * Point::new(x, y, z);
         let local_normal = self.raw_body.normal(local_point);
         (self.transpose_inverse_transformation * local_normal).normalize()
+    }
+}
+
+impl<T> Defaultable for TransformedBody<T>
+where
+    T: Body,
+    T: Defaultable,
+{
+    fn default() -> Self {
+        Self::new(Matrix4f::identity())
     }
 }

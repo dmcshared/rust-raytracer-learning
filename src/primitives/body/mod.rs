@@ -13,8 +13,4 @@ pub trait Body {
     fn normal(&self, p: Point) -> Vector {
         self.normal_raw(p.0 .0, p.0 .1, p.0 .2)
     }
-
-    fn default() -> Self
-    where
-        Self: Sized;
 }
