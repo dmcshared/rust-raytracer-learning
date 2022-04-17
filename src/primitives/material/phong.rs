@@ -13,8 +13,8 @@ impl Defaultable for Phong {
     fn default() -> Self {
         Self {
             ambient: ColorRGBA::new(0.1, 0.1, 0.1, 1.0),
-            diffuse: ColorRGBA::new(0.8, 0.8, 0.8, 1.0),
-            specular: ColorRGBA::new(0.0, 0.0, 0.0, 1.0),
+            diffuse: ColorRGBA::new(0.9, 0.9, 0.9, 1.0),
+            specular: ColorRGBA::new(0.9, 0.9, 0.9, 1.0),
             shininess: 0.0,
         }
     }
@@ -57,8 +57,8 @@ mod tests {
         let m = Phong::default();
 
         assert_eq!(m.ambient, ColorRGBA::new(0.1, 0.1, 0.1, 1.0));
-        assert_eq!(m.diffuse, ColorRGBA::new(0.8, 0.8, 0.8, 1.0));
-        assert_eq!(m.specular, ColorRGBA::new(0.0, 0.0, 0.0, 1.0));
+        assert_eq!(m.diffuse, ColorRGBA::new(0.9, 0.9, 0.9, 1.0));
+        assert_eq!(m.specular, ColorRGBA::new(0.9, 0.9, 0.9, 1.0));
         assert_eq!(m.shininess, 0.0);
     }
 
