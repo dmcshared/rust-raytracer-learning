@@ -320,7 +320,7 @@ impl ops::Mul<Point> for Matrix4f {
     type Output = Point;
 
     fn mul(self, rhs: Point) -> Self::Output {
-        let out = self * ColumnVector::from(rhs);
+        let mut out = self * ColumnVector::from(rhs);
 
         out[3][0] = 1.0;
         // assert_eq!(out[3][0], 1.0);
@@ -333,7 +333,7 @@ impl ops::Mul<Vector> for Matrix4f {
     type Output = Vector;
 
     fn mul(self, rhs: Vector) -> Self::Output {
-        let out = self * ColumnVector::from(rhs);
+        let mut out = self * ColumnVector::from(rhs);
 
         out[3][0] = 0.0;
         // assert_eq!(out[3][0], 0.0);
