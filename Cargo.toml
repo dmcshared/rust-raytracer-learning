@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 png = "0.16.8"
 indicatif = "0.16.2"
+rayon = "1.5.2"
+itertools = "0.10.3"

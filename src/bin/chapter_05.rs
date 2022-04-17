@@ -1,4 +1,6 @@
 use indicatif::ProgressBar;
+use itertools::Itertools;
+use rayon::iter::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 use raytracer::{
     gfx::{
         canvas::Canvas,
@@ -13,7 +15,7 @@ use raytracer::{
         three_part::point::Point,
     },
 };
-use std::fs::write;
+use std::{fs::write, sync::Mutex};
 
 fn main() {
     let ray_origin = Point::new(0.0, 0.0, -5.0);
@@ -24,11 +26,20 @@ fn main() {
 
     let sphere = Sphere::new(Matrix4f::identity());
 
-    let pb = ProgressBar::new(canvas.height.try_into().unwrap());
+    let canvas_width = canvas.width;
+    let canvas_height = canvas.height;
 
-    for y in 0..canvas.height {
-        for x in 0..canvas.width {
-            let half = canvas.width as f64 * 0.5;
+    let canvas_mutex = Mutex::new(&mut canvas);
+
+    let pb = ProgressBar::new((canvas_height * canvas_width).try_into().unwrap());
+
+    pb.set_draw_rate(10);
+
+    (0..canvas_height)
+        .cartesian_product(0..canvas_width)
+        .par_bridge()
+        .for_each(|(x, y)| {
+            let half = canvas_width as f64 * 0.5;
 
             let wall_point = Point::new(
                 (x as f64 - half) * virtual_pixel_size,
@@ -39,14 +50,14 @@ fn main() {
 
             let intersections = sphere.intersect(&ray);
 
+            let mut canv = canvas_mutex.lock().unwrap();
             if let Some(_) = intersections.hit() {
-                canvas.set_color_at(x, y, default_palettes::full_bright::WHITE);
+                (*canv).set_color_at(x, y, default_palettes::full_bright::WHITE);
             } else {
-                canvas.set_color_at(x, y, default_palettes::full_bright::BLACK);
+                (*canv).set_color_at(x, y, default_palettes::full_bright::BLACK);
             }
-        }
-        pb.inc(1);
-    }
+            pb.inc(1);
+        });
 
     pb.finish_with_message("Complete.");
 
