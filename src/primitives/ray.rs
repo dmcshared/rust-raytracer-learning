@@ -5,6 +5,7 @@ use super::{
     three_part::{point::Point, vector::Vector},
 };
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ray {
     pub origin: Point,
     pub direction: Vector,

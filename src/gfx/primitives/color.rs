@@ -27,6 +27,22 @@ use super::mix_modes::MixMode;
 #[derive(Debug, Clone, Copy)]
 pub struct ColorRGBA(pub f64, pub f64, pub f64, pub f64);
 
+pub mod default_palettes {
+    use super::ColorRGBA;
+    pub mod full_bright {
+        use super::ColorRGBA;
+
+        pub const RED: ColorRGBA = ColorRGBA(1.0, 0.0, 0.0, 1.0);
+        pub const YELLOW: ColorRGBA = ColorRGBA(1.0, 1.0, 0.0, 1.0);
+        pub const GREEN: ColorRGBA = ColorRGBA(0.0, 1.0, 0.0, 1.0);
+        pub const CYAN: ColorRGBA = ColorRGBA(0.0, 1.0, 1.0, 1.0);
+        pub const BLUE: ColorRGBA = ColorRGBA(0.0, 0.0, 1.0, 1.0);
+        pub const MAGENTA: ColorRGBA = ColorRGBA(1.0, 0.0, 1.0, 1.0);
+        pub const WHITE: ColorRGBA = ColorRGBA(1.0, 1.0, 1.0, 1.0);
+        pub const BLACK: ColorRGBA = ColorRGBA(0.0, 0.0, 0.0, 1.0);
+    }
+}
+
 impl ColorRGBA {
     pub fn new(r: f64, g: f64, b: f64, a: f64) -> ColorRGBA {
         ColorRGBA(r, g, b, a)

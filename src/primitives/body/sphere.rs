@@ -130,4 +130,15 @@ mod tests {
 
         assert_eq!(x.t, 4.0);
     }
+
+    #[test]
+    fn test_diagonal_should_miss() {
+        let s = Sphere::new(Matrix4f::identity());
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -5.0),
+            Vector::new(5.0, -5.0, 10.0).normalize(),
+        );
+        let xs = s.intersect(&r);
+        assert_eq!(xs.len(), 0);
+    }
 }

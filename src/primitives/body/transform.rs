@@ -6,7 +6,8 @@ pub struct TransformedBody<T>
 where
     T: Body,
 {
-    pub transformation: Matrix4f,
+    transformation: Matrix4f,
+    inverse_transformation: Matrix4f,
     pub raw_body: T,
 }
 
@@ -18,6 +19,9 @@ where
         Self {
             transformation,
             raw_body,
+            inverse_transformation: transformation
+                .inverse()
+                .expect("Transform Matrix in TransformedBody must be inversible"),
         }
     }
 
@@ -25,7 +29,17 @@ where
         Self {
             transformation,
             raw_body: T::default(),
+            inverse_transformation: transformation
+                .inverse()
+                .expect("Transform Matrix in TransformedBody must be inversible"),
         }
+    }
+
+    pub fn set_transformation(&mut self, transformation: Matrix4f) {
+        self.transformation = transformation;
+        self.inverse_transformation = transformation
+            .inverse()
+            .expect("Transform Matrix in TransformedBody must be inversible");
     }
 }
 
@@ -34,11 +48,7 @@ where
     T: Body,
 {
     fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
-        let local_ray = (self
-            .transformation
-            .inverse()
-            .expect("Transform Matrix in TransformedBody must be inversible"))
-            * ray;
+        let local_ray = self.inverse_transformation * ray;
         self.raw_body.intersect(&local_ray)
     }
 
