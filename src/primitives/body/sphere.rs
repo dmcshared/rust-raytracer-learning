@@ -1,12 +1,24 @@
 use crate::{
-    primitives::{intersection::Intersection, ray::Ray, three_part::point::Point},
+    primitives::{
+        intersection::Intersection, material::Material, ray::Ray, three_part::point::Point,
+    },
     util::Defaultable,
 };
 
-use super::{transform::TransformedBody, Body};
+use super::{transform::TransformedBody, Body, BodyBuilder};
 
-#[derive(Debug, Copy, Clone)]
-pub struct RawSphere {}
+#[derive(Debug)]
+pub struct RawSphere {
+    pub material: Box<dyn Material>,
+}
+
+impl Clone for RawSphere {
+    fn clone(&self) -> Self {
+        Self {
+            material: dyn_clone::clone_box(&*self.material),
+        }
+    }
+}
 
 impl Body for RawSphere {
     fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
@@ -22,13 +34,13 @@ impl Body for RawSphere {
             vec![]
         } else if discriminant == 0.0 {
             let t = -b / (2.0 * a);
-            vec![Intersection::new(t, Box::new(*self), *ray)]
+            vec![Intersection::new(t, Box::new((*self).clone()), *ray)]
         } else {
             let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
             let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
             vec![
-                Intersection::new(t1, Box::new(*self), *ray),
-                Intersection::new(t2, Box::new(*self), *ray),
+                Intersection::new(t1, Box::new((*self).clone()), *ray),
+                Intersection::new(t2, Box::new((*self).clone()), *ray),
             ]
         }
     }
@@ -36,11 +48,23 @@ impl Body for RawSphere {
     fn normal_raw(&self, x: f64, y: f64, z: f64) -> crate::primitives::three_part::vector::Vector {
         (Point::new(x, y, z) - Point::origin()).normalize()
     }
+
+    fn get_material(&self) -> Box<dyn crate::primitives::material::Material> {
+        dyn_clone::clone_box(&*self.material)
+    }
+}
+
+impl BodyBuilder for RawSphere {
+    fn with_material(&self, material: Box<dyn Material>) -> Self {
+        RawSphere { material }
+    }
 }
 
 impl Defaultable for RawSphere {
     fn default() -> Self {
-        RawSphere {}
+        RawSphere {
+            material: Box::new(crate::primitives::material::Default::default()),
+        }
     }
 }
 

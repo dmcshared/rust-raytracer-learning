@@ -21,7 +21,7 @@ impl<'a> Image for PNGImage<'a> {
         let mut v = Vec::new();
         let mut encoder =
             png::Encoder::new(&mut v, self.canvas.width as u32, self.canvas.height as u32);
-        encoder.set_color(png::ColorType::RGBA);
+        encoder.set_color(png::ColorType::Rgba);
         encoder.set_depth(png::BitDepth::Eight);
         let mut writer = encoder.write_header().unwrap();
         writer.write_image_data(&self.canvas.as_bytes()).unwrap();

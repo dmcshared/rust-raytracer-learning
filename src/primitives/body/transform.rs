@@ -5,7 +5,7 @@ use crate::{
     util::Defaultable,
 };
 
-use super::Body;
+use super::{Body, BodyBuilder};
 
 pub struct TransformedBody<T>
 where
@@ -25,7 +25,12 @@ where
     pub fn new(transformation: Matrix4f) -> Self {
         Self::new_with_body(transformation, T::default())
     }
+}
 
+impl<T> TransformedBody<T>
+where
+    T: Body,
+{
     pub fn new_with_body(transformation: Matrix4f, raw_body: T) -> Self {
         let inverse_transformation = transformation
             .inverse()
@@ -61,6 +66,26 @@ where
         let local_point = self.inverse_transformation * Point::new(x, y, z);
         let local_normal = self.raw_body.normal(local_point);
         (self.transpose_inverse_transformation * local_normal).normalize()
+    }
+
+    fn get_material(&self) -> Box<dyn crate::primitives::material::Material> {
+        self.raw_body.get_material()
+    }
+}
+
+impl<T> BodyBuilder for TransformedBody<T>
+where
+    T: Body,
+    T: BodyBuilder,
+{
+    fn with_material(
+        &self,
+        material: Box<dyn crate::primitives::material::Material>,
+    ) -> TransformedBody<T> {
+        TransformedBody::<T>::new_with_body(
+            self.transformation,
+            self.raw_body.with_material(material),
+        )
     }
 }
 

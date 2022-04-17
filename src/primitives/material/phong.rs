@@ -2,6 +2,7 @@ use crate::{gfx::primitives::color::ColorRGBA, util::Defaultable};
 
 use super::Material;
 
+#[derive(Debug, Clone, Copy)]
 pub struct Phong {
     pub ambient: ColorRGBA,
     pub diffuse: ColorRGBA,
