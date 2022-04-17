@@ -322,8 +322,8 @@ impl ops::Mul<Point> for Matrix4f {
     fn mul(self, rhs: Point) -> Self::Output {
         let out = self * ColumnVector::from(rhs);
 
-        // out[3][0] = 1.0;
-        assert_eq!(out[3][0], 1.0);
+        out[3][0] = 1.0;
+        // assert_eq!(out[3][0], 1.0);
 
         Point(out.into())
     }
@@ -335,8 +335,8 @@ impl ops::Mul<Vector> for Matrix4f {
     fn mul(self, rhs: Vector) -> Self::Output {
         let out = self * ColumnVector::from(rhs);
 
-        // out[3][0] = 0.0;
-        assert_eq!(out[3][0], 0.0);
+        out[3][0] = 0.0;
+        // assert_eq!(out[3][0], 0.0);
 
         Vector(out.into())
     }
@@ -360,7 +360,7 @@ impl From<Vector> for ColumnVector {
 
 impl From<ColumnVector> for ThreePart {
     fn from(mat: ColumnVector) -> Self {
-        assert!(mat.get_position(0, 3) == 1.0 || mat.get_position(0, 3) == 0.0);
+        // assert!(mat.get_position(0, 3) == 1.0 || mat.get_position(0, 3) == 0.0);
 
         ThreePart(
             mat.get_position(0, 0),
@@ -372,7 +372,7 @@ impl From<ColumnVector> for ThreePart {
 }
 impl From<RowVector> for ThreePart {
     fn from(mat: RowVector) -> Self {
-        assert!(mat.get_position(0, 3) == 1.0 || mat.get_position(0, 3) == 0.0);
+        // assert!(mat.get_position(0, 3) == 1.0 || mat.get_position(0, 3) == 0.0);
 
         ThreePart(
             mat.get_position(0, 0),
