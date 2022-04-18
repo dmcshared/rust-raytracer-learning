@@ -10,7 +10,7 @@ pub mod sphere;
 pub mod transform;
 use std::{fmt::Debug, sync::Arc};
 
-pub trait Body: Debug + Sync {
+pub trait Body: Debug + Sync + Send {
     fn intersect(&self, ray: &Ray) -> Vec<Intersection>;
     fn normal_raw(&self, x: f64, y: f64, z: f64) -> Vector;
     fn normal(&self, p: Point) -> Vector {
