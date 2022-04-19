@@ -1,11 +1,8 @@
 pub mod directional_light;
 pub mod point_light;
 
+use crate::prelude::light::*;
 use std::sync::Arc;
-
-use crate::gfx::primitives::color::ColorRGBA;
-
-use super::ray::Ray;
 
 pub trait Light: Sync + Send {
     fn light_effectiveness(&self, r: Ray) -> ColorRGBA;

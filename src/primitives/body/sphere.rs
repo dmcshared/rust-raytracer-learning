@@ -1,10 +1,5 @@
+use crate::prelude::body::*;
 use std::sync::Arc;
-
-use crate::primitives::{
-    intersection::Intersection, material::Material, ray::Ray, three_part::point::Point,
-};
-
-use super::{transform::TransformedBody, Body, BodyBuilder};
 
 #[derive(Debug)]
 pub struct RawSphere {

@@ -1,9 +1,4 @@
-use crate::{
-    gfx::primitives::color::ColorRGBA,
-    primitives::{ray::Ray, three_part::point::Point},
-};
-
-use super::Light;
+use crate::prelude::light::*;
 
 pub struct PointLight {
     pub position: Point,

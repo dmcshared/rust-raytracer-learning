@@ -1,9 +1,4 @@
-use super::{
-    intersection::Intersection,
-    material::Material,
-    ray::Ray,
-    three_part::{point::Point, vector::Vector},
-};
+use crate::prelude::body::*;
 
 pub mod scene;
 pub mod sphere;

@@ -1,9 +1,4 @@
-use crate::{
-    gfx::primitives::color::ColorRGBA,
-    primitives::{ray::Ray, three_part::vector::Vector},
-};
-
-use super::Light;
+use crate::prelude::light::*;
 
 pub struct DirectionalLight {
     pub direction: Vector,

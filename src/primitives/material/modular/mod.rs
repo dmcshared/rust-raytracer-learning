@@ -5,14 +5,8 @@ pub mod special;
 pub mod specular;
 pub mod util;
 
+use crate::prelude::material::*;
 use std::sync::Arc;
-
-use crate::{
-    gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
-    primitives::{intersection::Intersection, world_info::WorldInfo},
-};
-
-use super::Material;
 
 #[derive(Debug)]
 pub struct MaterialStack {

@@ -1,9 +1,6 @@
 use std::ops;
 
-use super::{
-    matrix::Matrix4f,
-    three_part::{point::Point, vector::Vector},
-};
+use crate::prelude::body::*;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Ray {

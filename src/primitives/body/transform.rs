@@ -1,10 +1,5 @@
+use crate::prelude::body::*;
 use std::sync::Arc;
-
-use crate::primitives::{
-    intersection::Intersection, matrix::Matrix4f, ray::Ray, three_part::point::Point,
-};
-
-use super::{Body, BodyBuilder};
 
 #[derive(Clone, Debug)]
 pub struct TransformedBody<T>

@@ -1,11 +1,5 @@
+use crate::prelude::materials::*;
 use std::sync::Arc;
-
-use crate::{
-    gfx::primitives::color::ColorRGBA,
-    primitives::material::modular::{
-        ambient::Ambient, diffuse::Diffuse, specular::Specular, MaterialStack,
-    },
-};
 
 pub fn phong(
     ambient: ColorRGBA,

@@ -1,11 +1,5 @@
+use crate::prelude::material::*;
 use std::sync::Arc;
-
-use crate::{
-    gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
-    primitives::{intersection::Intersection, ray::Ray, world_info::WorldInfo},
-};
-
-use super::Material;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Phong {

@@ -1,9 +1,5 @@
+use crate::prelude::material::*;
 use std::sync::Arc;
-
-use crate::{
-    gfx::primitives::color::ColorRGBA,
-    primitives::{intersection::Intersection, material::Material, world_info::WorldInfo},
-};
 
 /// A simple ambient color material.
 /// Use this file as a template for new materials.

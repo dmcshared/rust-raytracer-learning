@@ -1,9 +1,5 @@
+use crate::prelude::material::*;
 use std::sync::Arc;
-
-use crate::{
-    gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
-    primitives::{intersection::Intersection, material::Material, world_info::WorldInfo},
-};
 
 #[derive(Debug)]
 pub struct Multiply {

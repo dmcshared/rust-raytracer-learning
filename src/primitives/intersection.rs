@@ -1,10 +1,6 @@
 use std::sync::Arc;
 
-use super::{
-    body::Body,
-    ray::Ray,
-    three_part::{point::Point, vector::Vector},
-};
+use crate::prelude::body::*;
 
 pub struct Intersection {
     pub t: f64,

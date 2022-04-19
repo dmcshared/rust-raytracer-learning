@@ -2,9 +2,8 @@ pub mod transform;
 
 use std::ops;
 
+use crate::prelude::body::*;
 use crate::util::fuzzy_comparison::FuzzyPartialEq;
-
-use super::three_part::{point::Point, vector::Vector, ThreePart};
 
 pub type MatrixRow<const WIDTH: usize> = [f64; WIDTH];
 pub type MatrixRaw<const WIDTH: usize, const HEIGHT: usize> = [MatrixRow<WIDTH>; HEIGHT];

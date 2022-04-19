@@ -1,8 +1,5 @@
+use crate::prelude::body::*;
 use std::sync::Arc;
-
-use crate::primitives::{intersection::Intersection, ray::Ray};
-
-use super::Body;
 
 #[derive(Debug, Clone)]
 pub struct Scene {

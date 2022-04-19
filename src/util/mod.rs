@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 pub mod fuzzy_comparison;
-pub mod weak_cell;
 
 pub trait NewAsArc {
     fn as_arc(self) -> Arc<Self>;
