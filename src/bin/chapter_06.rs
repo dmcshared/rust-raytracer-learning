@@ -15,7 +15,9 @@ use raytracer::{
         matrix::Matrix4f,
         ray::Ray,
         three_part::point::Point,
+        world_info::{Limits, WorldInfo},
     },
+    util::NewAsArc,
 };
 use std::{fs::write, sync::Arc, sync::Mutex};
 
@@ -30,7 +32,9 @@ fn main() {
         .with_diffuse(ColorRGBA::new(0.5, 0.5, 0.5, 1.0))
         .with_shininess(30.0);
 
-    let sphere = Sphere::new(Matrix4f::identity()).with_material(Arc::new(material));
+    let scene = Sphere::new(Matrix4f::identity())
+        .with_material(Arc::new(material))
+        .as_arc();
 
     let lights = Lights::new(vec![
         // Arc::new(PointLight::new(
@@ -45,12 +49,22 @@ fn main() {
             Point::new(10.0, 10.0, -10.0),
             ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
         )),
-    ]);
+    ])
+    .as_arc();
 
     let canvas_width = canvas.width;
     let canvas_height = canvas.height;
 
     let canvas_mutex = Mutex::new(&mut canvas);
+
+    let world_info = WorldInfo {
+        root_object: scene.clone(),
+        lights: lights.clone(),
+        limits: Limits {
+            max_light_bounces: 5,
+        },
+    }
+    .as_arc();
 
     let pb = ProgressBar::new((canvas_height * canvas_width).try_into().unwrap());
 
@@ -69,11 +83,11 @@ fn main() {
             );
             let ray = Ray::new(ray_origin, (wall_point - ray_origin).normalize());
 
-            let intersections = sphere.intersect(&ray);
+            let intersections = scene.intersect(&ray);
 
             let mut canv = canvas_mutex.lock().unwrap();
             if let Some(hit) = intersections.hit() {
-                (*canv).set_color_at(x, y, sphere.get_material().render(hit, &lights));
+                (*canv).set_color_at(x, y, scene.get_material().render(hit, world_info.clone()));
             } else {
                 (*canv).set_color_at(x, y, default_palettes::full_bright::BLACK);
             }

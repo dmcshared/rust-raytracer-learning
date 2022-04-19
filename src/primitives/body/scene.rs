@@ -1,4 +1,4 @@
-use std::sync::{Arc, Weak};
+use std::sync::Arc;
 
 use crate::primitives::{intersection::Intersection, ray::Ray};
 
@@ -7,31 +7,18 @@ use super::Body;
 #[derive(Debug, Clone)]
 pub struct Scene {
     pub bodies: Vec<Arc<dyn Body>>,
-    arc_scene: Weak<Scene>,
 }
 
 impl Scene {
     pub fn new(bodies: Vec<Arc<dyn Body>>) -> Arc<Self> {
-        Arc::new_cyclic(|weak| Self {
-            bodies,
-            arc_scene: weak.clone(),
-        })
+        // Arc::new_cyclic(|weak| Self { bodies })
+        Arc::new(Self { bodies })
     }
 }
 
 impl Body for Scene {
     fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
-        self.bodies
-            .iter()
-            .flat_map(|b| b.intersect(ray))
-            .map(|b| {
-                b.with_top_level_object(
-                    self.arc_scene
-                        .upgrade()
-                        .expect("arc_scene is self, so it should always upgrade in self's methods"),
-                )
-            })
-            .collect()
+        self.bodies.iter().flat_map(|b| b.intersect(ray)).collect()
     }
 
     fn normal_raw(

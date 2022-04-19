@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::{
     gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
-    primitives::{intersection::Intersection, light::Lights, material::Material},
+    primitives::{intersection::Intersection, material::Material, world_info::WorldInfo},
 };
 
 #[derive(Debug)]
@@ -17,11 +17,14 @@ impl Multiply {
 }
 
 impl Material for Multiply {
-    fn render(&self, intersection: &Intersection, lights: &Lights) -> ColorRGBA {
+    fn render(&self, intersection: &Intersection, world_info: Arc<WorldInfo>) -> ColorRGBA {
         self.materials
             .iter()
             .fold(ColorRGBA::new(1.0, 1.0, 1.0, 1.0), |acc, material| {
-                acc.mix(material.render(intersection, lights), MixMode::Mul)
+                acc.mix(
+                    material.render(intersection, world_info.clone()),
+                    MixMode::Mul,
+                )
             })
     }
 }

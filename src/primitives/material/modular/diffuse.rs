@@ -1,11 +1,8 @@
+use std::sync::Arc;
+
 use crate::{
     gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
-    primitives::{
-        intersection::Intersection,
-        light::{Light, Lights},
-        material::Material,
-        ray::Ray,
-    },
+    primitives::{intersection::Intersection, material::Material, ray::Ray, world_info::WorldInfo},
 };
 
 /// A simple ambient color material.
@@ -22,9 +19,10 @@ impl Diffuse {
 }
 
 impl Material for Diffuse {
-    fn render(&self, intersection: &Intersection, lights: &Lights) -> ColorRGBA {
-        let light_dot_normal =
-            lights.light_effectiveness(Ray::new(intersection.world_pos, intersection.world_normal));
+    fn render(&self, intersection: &Intersection, world_info: Arc<WorldInfo>) -> ColorRGBA {
+        let light_dot_normal = world_info
+            .lights
+            .light_effectiveness(Ray::new(intersection.world_pos, intersection.world_normal));
 
         if light_dot_normal.3 <= 0.0 {
             ColorRGBA::blank()

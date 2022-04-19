@@ -1,6 +1,8 @@
+use std::sync::Arc;
+
 use crate::{
     gfx::primitives::color::ColorRGBA,
-    primitives::{intersection::Intersection, light::Lights, material::Material},
+    primitives::{intersection::Intersection, material::Material, world_info::WorldInfo},
 };
 
 /// A simple ambient color material.
@@ -18,7 +20,7 @@ impl CheckerBoard {
 }
 
 impl Material for CheckerBoard {
-    fn render(&self, intersection: &Intersection, _lights: &Lights) -> ColorRGBA {
+    fn render(&self, intersection: &Intersection, _world_info: Arc<WorldInfo>) -> ColorRGBA {
         let x = (intersection.world_pos.0 .0 * 4.0) as i32;
         let y = (intersection.world_pos.0 .1 * 4.0) as i32;
         let z = (intersection.world_pos.0 .2 * 4.0) as i32;

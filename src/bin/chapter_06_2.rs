@@ -21,9 +21,11 @@ use raytracer::{
         matrix::Matrix4f,
         ray::Ray,
         three_part::point::Point,
+        world_info::{Limits, WorldInfo},
     },
+    util::NewAsArc,
 };
-use std::{fs::write, sync::Arc, sync::Mutex};
+use std::{fs::write, sync::Mutex};
 
 fn main() {
     let ray_origin = Point::new(0.0, 0.0, -5.0);
@@ -43,29 +45,34 @@ fn main() {
     // );
 
     let material = MaterialStack::new(vec![
-        Arc::new(Ambient::new(ColorRGBA::new(0.1, 0.1, 0.1, 1.0))),
-        Arc::new(Multiply::new(vec![
-            Arc::new(Diffuse::new(ColorRGBA::new(1.0, 1.0, 1.0, 1.0))),
-            Arc::new(CheckerBoard::new(
+        Ambient::new(ColorRGBA::new(0.1, 0.1, 0.1, 1.0)).as_arc(),
+        Multiply::new(vec![
+            Diffuse::new(ColorRGBA::new(1.0, 1.0, 1.0, 1.0)).as_arc(),
+            CheckerBoard::new(
                 ColorRGBA::new(1.0, 0.0, 0.0, 1.0),
                 ColorRGBA::new(0.0, 0.0, 1.0, 1.0),
-            )),
-        ])),
-        Arc::new(Specular::new(ColorRGBA::new(0.9, 0.9, 0.9, 1.0), 30.0)),
-    ]);
+            )
+            .as_arc(),
+        ])
+        .as_arc(),
+        Specular::new(ColorRGBA::new(0.9, 0.9, 0.9, 1.0), 30.0).as_arc(),
+    ])
+    .as_arc();
 
     let material_red = Phong::default()
         .with_diffuse(ColorRGBA::new(1.0, 0.5, 0.5, 1.0))
-        .with_shininess(30.0);
+        .with_shininess(30.0)
+        .as_arc();
 
     // let scene = Sphere::new(Matrix4f::identity()).with_material(Arc::new(material));
 
     let scene = Scene::new(vec![
-        Arc::new(Sphere::new(Matrix4f::identity()).with_material(Arc::new(material))),
-        Arc::new(
-            Sphere::new(Matrix4f::translate_raw(0.0, 1.0, 0.0))
-                .with_material(Arc::new(material_red)),
-        ),
+        Sphere::new(Matrix4f::identity())
+            .with_material(material)
+            .as_arc(),
+        Sphere::new(Matrix4f::translate_raw(0.0, 1.0, 0.0))
+            .with_material(material_red)
+            .as_arc(),
     ]);
 
     let lights = Lights::new(vec![
@@ -73,15 +80,27 @@ fn main() {
         //     Point::new(-10.0, 10.0, -10.0),
         //     ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
         // )),
-        Arc::new(PointLight::new(
+        PointLight::new(
             Point::new(-10.0, 10.0, -10.0),
             ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
-        )),
-        Arc::new(PointLight::new(
+        )
+        .as_arc(),
+        PointLight::new(
             Point::new(10.0, 10.0, -10.0),
             ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
-        )),
-    ]);
+        )
+        .as_arc(),
+    ])
+    .as_arc();
+
+    let world_info = WorldInfo {
+        root_object: scene.clone(),
+        lights: lights.clone(),
+        limits: Limits {
+            max_light_bounces: 5,
+        },
+    }
+    .as_arc();
 
     let canvas_width = canvas.width;
     let canvas_height = canvas.height;
@@ -115,7 +134,11 @@ fn main() {
 
             let mut canv = canv_opt.unwrap();
             if let Some(hit) = intersections.hit() {
-                (*canv).set_color_at(x, y, hit.object.get_material().render(hit, &lights));
+                (*canv).set_color_at(
+                    x,
+                    y,
+                    hit.object.get_material().render(hit, world_info.clone()),
+                );
             } else {
                 (*canv).set_color_at(x, y, default_palettes::full_bright::BLACK);
             }

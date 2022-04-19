@@ -1,11 +1,8 @@
+use std::sync::Arc;
+
 use crate::{
     gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
-    primitives::{
-        intersection::Intersection,
-        light::{Light, Lights},
-        material::Material,
-        ray::Ray,
-    },
+    primitives::{intersection::Intersection, material::Material, ray::Ray, world_info::WorldInfo},
 };
 
 /// A simple ambient color material.
@@ -23,7 +20,7 @@ impl Specular {
 }
 
 impl Material for Specular {
-    fn render(&self, intersection: &Intersection, lights: &Lights) -> ColorRGBA {
+    fn render(&self, intersection: &Intersection, world_info: Arc<WorldInfo>) -> ColorRGBA {
         let reflectv = Ray::new(
             intersection.world_pos,
             intersection
@@ -31,8 +28,10 @@ impl Material for Specular {
                 .direction
                 .reflect_across(intersection.world_normal),
         );
-        let reflect_dot_light = lights.light_effectiveness_exp(reflectv, self.shininess);
-        // let reflect_dot_light = lights.light_effectiveness(reflectv).powf(self.shininess);
+        let reflect_dot_light = world_info
+            .lights
+            .light_effectiveness_exp(reflectv, self.shininess);
+        // let reflect_dot_light = world_info.lights.light_effectiveness(reflectv).powf(self.shininess);
 
         if reflect_dot_light.3 <= 0.0 {
             ColorRGBA::blank()

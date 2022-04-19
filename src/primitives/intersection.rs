@@ -9,7 +9,6 @@ use super::{
 pub struct Intersection {
     pub t: f64,
     pub object: Arc<dyn Body>,
-    pub top_level_object: Arc<dyn Body>,
     pub ray: Ray,
     pub world_pos: Point,
     pub world_normal: Vector,
@@ -21,15 +20,9 @@ impl Intersection {
             t,
             world_pos: ray.at(t),
             world_normal: object.normal(ray.at(t)),
-            top_level_object: object.clone(),
             object,
             ray,
         }
-    }
-
-    pub fn with_top_level_object(mut self, object: Arc<dyn Body>) -> Self {
-        self.top_level_object = object;
-        self
     }
 }
 

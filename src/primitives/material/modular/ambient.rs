@@ -1,6 +1,8 @@
+use std::sync::Arc;
+
 use crate::{
     gfx::primitives::color::ColorRGBA,
-    primitives::{intersection::Intersection, light::Lights, material::Material},
+    primitives::{intersection::Intersection, material::Material, world_info::WorldInfo},
 };
 
 /// A simple ambient color material.
@@ -17,7 +19,7 @@ impl Ambient {
 }
 
 impl Material for Ambient {
-    fn render(&self, _intersection: &Intersection, _lights: &Lights) -> ColorRGBA {
+    fn render(&self, _intersection: &Intersection, _world_info: Arc<WorldInfo>) -> ColorRGBA {
         self.color
     }
 }

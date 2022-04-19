@@ -15,7 +15,9 @@ use raytracer::{
         matrix::Matrix4f,
         ray::Ray,
         three_part::point::Point,
+        world_info::{Limits, WorldInfo},
     },
+    util::NewAsArc,
 };
 use std::{fs::write, sync::Arc, sync::Mutex};
 
@@ -47,7 +49,17 @@ fn main() {
     let lights = Lights::new(vec![Arc::new(PointLight::new(
         Point::new(-10.0, 10.0, -10.0),
         ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
-    ))]);
+    ))])
+    .as_arc();
+
+    let world_info = WorldInfo {
+        root_object: scene.clone(),
+        lights: lights.clone(),
+        limits: Limits {
+            max_light_bounces: 5,
+        },
+    }
+    .as_arc();
 
     let canvas_width = canvas.width;
     let canvas_height = canvas.height;
@@ -81,7 +93,11 @@ fn main() {
 
             let mut canv = canv_opt.unwrap();
             if let Some(hit) = intersections.hit() {
-                (*canv).set_color_at(x, y, hit.object.get_material().render(hit, &lights));
+                (*canv).set_color_at(
+                    x,
+                    y,
+                    hit.object.get_material().render(hit, world_info.clone()),
+                );
             } else {
                 (*canv).set_color_at(x, y, default_palettes::full_bright::BLACK);
             }

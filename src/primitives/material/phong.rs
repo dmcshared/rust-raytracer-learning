@@ -1,10 +1,8 @@
+use std::sync::Arc;
+
 use crate::{
     gfx::primitives::{color::ColorRGBA, mix_modes::MixMode},
-    primitives::{
-        intersection::Intersection,
-        light::{Light, Lights},
-        ray::Ray,
-    },
+    primitives::{intersection::Intersection, ray::Ray, world_info::WorldInfo},
 };
 
 use super::Material;
@@ -32,10 +30,11 @@ impl Material for Phong {
     fn render(
         &self,
         intersection: &Intersection,
-        lights: &Lights,
+        world_info: Arc<WorldInfo>,
     ) -> crate::gfx::primitives::color::ColorRGBA {
-        let light_dot_normal =
-            lights.light_effectiveness(Ray::new(intersection.world_pos, intersection.world_normal));
+        let light_dot_normal = world_info
+            .lights
+            .light_effectiveness(Ray::new(intersection.world_pos, intersection.world_normal));
 
         let (diffuse, specular) = if light_dot_normal.3 <= 0.0 {
             (ColorRGBA::blank(), ColorRGBA::blank())
@@ -47,7 +46,9 @@ impl Material for Phong {
                     .direction
                     .reflect_across(intersection.world_normal),
             );
-            let reflect_dot_light = lights.light_effectiveness_exp(reflectv, self.shininess);
+            let reflect_dot_light = world_info
+                .lights
+                .light_effectiveness_exp(reflectv, self.shininess);
 
             let specular = if reflect_dot_light.3 <= 0.0 {
                 ColorRGBA::blank()
