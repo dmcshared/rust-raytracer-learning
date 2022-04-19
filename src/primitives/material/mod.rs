@@ -1,3 +1,4 @@
+pub mod modular;
 pub mod phong;
 
 use crate::gfx::primitives::color::ColorRGBA;

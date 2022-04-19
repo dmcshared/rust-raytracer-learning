@@ -11,7 +11,13 @@ use raytracer::{
         body::{scene::Scene, sphere::Sphere, Body, BodyBuilder},
         intersection::IntersectionList,
         light::{point_light::PointLight, Lights},
-        material::phong::Phong,
+        material::{
+            modular::{
+                ambient::Ambient, combinators::multiply::Multiply, diffuse::Diffuse,
+                special::checkerboard::CheckerBoard, specular::Specular, MaterialStack,
+            },
+            phong::Phong,
+        },
         matrix::Matrix4f,
         ray::Ray,
         three_part::point::Point,
@@ -26,9 +32,27 @@ fn main() {
     let mut canvas = Canvas::new(512, 512);
     let virtual_pixel_size = virtual_canvas_size / (canvas.width as f64);
 
-    let material = Phong::default()
-        .with_diffuse(ColorRGBA::new(0.5, 0.5, 0.5, 1.0))
-        .with_shininess(30.0);
+    // let material = Phong::default()
+    //     .with_diffuse(ColorRGBA::new(0.5, 0.5, 0.5, 1.0))
+    //     .with_shininess(30.0);
+    // let material = phong(
+    //     ColorRGBA::new(0.1, 0.1, 0.1, 1.0),
+    //     ColorRGBA::new(0.5, 0.5, 0.5, 1.0),
+    //     ColorRGBA::new(0.9, 0.9, 0.9, 1.0),
+    //     30.0,
+    // );
+
+    let material = MaterialStack::new(vec![
+        Arc::new(Ambient::new(ColorRGBA::new(0.1, 0.1, 0.1, 1.0))),
+        Arc::new(Multiply::new(vec![
+            Arc::new(Diffuse::new(ColorRGBA::new(1.0, 1.0, 1.0, 1.0))),
+            Arc::new(CheckerBoard::new(
+                ColorRGBA::new(1.0, 0.0, 0.0, 1.0),
+                ColorRGBA::new(0.0, 0.0, 1.0, 1.0),
+            )),
+        ])),
+        Arc::new(Specular::new(ColorRGBA::new(0.9, 0.9, 0.9, 1.0), 30.0)),
+    ]);
 
     let material_red = Phong::default()
         .with_diffuse(ColorRGBA::new(1.0, 0.5, 0.5, 1.0))
@@ -44,10 +68,20 @@ fn main() {
         ),
     ]);
 
-    let lights = Lights::new(vec![Arc::new(PointLight::new(
-        Point::new(-10.0, 10.0, -10.0),
-        ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
-    ))]);
+    let lights = Lights::new(vec![
+        // Arc::new(PointLight::new(
+        //     Point::new(-10.0, 10.0, -10.0),
+        //     ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
+        // )),
+        Arc::new(PointLight::new(
+            Point::new(-10.0, 10.0, -10.0),
+            ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
+        )),
+        Arc::new(PointLight::new(
+            Point::new(10.0, 10.0, -10.0),
+            ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
+        )),
+    ]);
 
     let canvas_width = canvas.width;
     let canvas_height = canvas.height;

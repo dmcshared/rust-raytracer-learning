@@ -10,7 +10,7 @@ let
 in pkgs.mkShell {
   buildInputs = [
     # pkgs.cargo pkgs.rustc
-    nixpkgs.latest.rustChannels.nightly.rust
+    pkgs.latest.rustChannels.nightly.rust
     pkgs.rustfmt
     pkgs.clang
   ];

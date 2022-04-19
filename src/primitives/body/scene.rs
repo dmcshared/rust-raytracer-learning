@@ -1,9 +1,6 @@
-use std::sync::{Arc, RwLock, Weak};
+use std::sync::{Arc, Weak};
 
-use crate::{
-    primitives::{intersection::Intersection, ray::Ray},
-    util::weak_cell::WeakCell,
-};
+use crate::primitives::{intersection::Intersection, ray::Ray};
 
 use super::Body;
 
@@ -17,7 +14,7 @@ impl Scene {
     pub fn new(bodies: Vec<Arc<dyn Body>>) -> Arc<Self> {
         Arc::new_cyclic(|weak| Self {
             bodies,
-            arc_scene: *weak,
+            arc_scene: weak.clone(),
         })
     }
 }
@@ -30,8 +27,6 @@ impl Body for Scene {
             .map(|b| {
                 b.with_top_level_object(
                     self.arc_scene
-                        .as_ref()
-                        .expect("arc_scene should be defined when using new")
                         .upgrade()
                         .expect("arc_scene is self, so it should always upgrade in self's methods"),
                 )
@@ -39,11 +34,20 @@ impl Body for Scene {
             .collect()
     }
 
-    fn normal_raw(&self, x: f64, y: f64, z: f64) -> crate::primitives::three_part::vector::Vector {
-        todo!()
+    fn normal_raw(
+        &self,
+        _x: f64,
+        _y: f64,
+        _z: f64,
+    ) -> crate::primitives::three_part::vector::Vector {
+        panic!(
+            "Something is calling normal_raw on a Scene. Intersection.object should not be Scene"
+        )
     }
 
     fn get_material(&self) -> Arc<dyn crate::primitives::material::Material> {
-        todo!()
+        panic!(
+            "Something called get_material on Scene. Only call get_material on Intersection.object"
+        )
     }
 }

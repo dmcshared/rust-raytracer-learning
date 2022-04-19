@@ -33,18 +33,18 @@ fn main() {
     let sphere = Sphere::new(Matrix4f::identity()).with_material(Arc::new(material));
 
     let lights = Lights::new(vec![
-        Arc::new(PointLight::new(
-            Point::new(-10.0, 10.0, -10.0),
-            ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
-        )),
         // Arc::new(PointLight::new(
         //     Point::new(-10.0, 10.0, -10.0),
-        //     ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
+        //     ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
         // )),
-        // Arc::new(PointLight::new(
-        //     Point::new(10.0, 10.0, -10.0),
-        //     ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
-        // )),
+        Arc::new(PointLight::new(
+            Point::new(-10.0, 10.0, -10.0),
+            ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
+        )),
+        Arc::new(PointLight::new(
+            Point::new(10.0, 10.0, -10.0),
+            ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
+        )),
     ]);
 
     let canvas_width = canvas.width;
