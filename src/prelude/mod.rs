@@ -15,6 +15,7 @@ pub mod all {
 }
 
 pub mod essential {
-    pub use super::body::{IntersectionList, Matrix4f, Point};
+    pub use super::body::{Camera, IntersectionList, Matrix4f, Point, Vector};
     pub use super::{bodies::*, export::*, general::*, lights::*, materials::*};
+    pub use crate::primitives::rotation::{degrees::Degree, radians::Radian, Rotation};
 }

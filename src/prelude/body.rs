@@ -1,5 +1,6 @@
 pub use crate::primitives::{
     body::{transform::TransformedBody, Body, BodyBuilder},
+    camera::Camera,
     intersection::{Intersection, IntersectionList},
     material::Material,
     matrix::Matrix4f,
