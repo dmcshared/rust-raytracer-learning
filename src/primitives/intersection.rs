@@ -34,7 +34,17 @@ impl IntersectionList for Vec<Intersection> {
 
     fn hit(&self) -> Option<&Intersection> {
         // go through Intersections and return the one with smallest t above 0
-        self.iter()
-            .reduce(|min, i| if i.t >= 0.0 && i.t < min.t { i } else { min })
+        let out = self.iter().reduce(|i, min| {
+            if i.t >= 0.0 && (i.t < min.t || min.t < 0.0) {
+                i
+            } else {
+                min
+            }
+        });
+
+        if out.is_none() || out.unwrap().t < 0.0 {
+            return None;
+        }
+        out
     }
 }

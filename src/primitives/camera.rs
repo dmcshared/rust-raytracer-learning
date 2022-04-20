@@ -43,8 +43,8 @@ impl Camera {
 
         let forward = self.forward;
         let up = self.up;
-        let right = (forward / up).normalize();
-        let up = (right / forward).normalize();
+        let right = (up / forward).normalize();
+        let up = (forward / right).normalize();
 
         let origin = self.position;
         let direction = right * x + up * y + forward * self.z;

@@ -15,50 +15,63 @@ fn main() {
 
     let material = MaterialStack::new(vec![
         Ambient::new(ColorRGBA::new(0.1, 0.1, 0.1, 1.0)).as_arc(),
-        Multiply::new(vec![
-            Diffuse::new(ColorRGBA::new(1.0, 1.0, 1.0, 1.0)).as_arc(),
-            CheckerBoard::new(
-                ColorRGBA::new(1.0, 0.0, 0.0, 1.0),
-                ColorRGBA::new(0.0, 0.0, 1.0, 1.0),
-            )
-            .as_arc(),
-        ])
-        .as_arc(),
-        Specular::new(ColorRGBA::new(0.9, 0.9, 0.9, 1.0), 30.0).as_arc(),
+        // Multiply::new(vec![
+        Diffuse::new(ColorRGBA::new(1.0, 1.0, 1.0, 1.0)).as_arc(),
+        //     CheckerBoard::new(
+        //         ColorRGBA::new(1.0, 0.0, 0.0, 1.0),
+        //         ColorRGBA::new(0.0, 0.0, 1.0, 1.0),
+        //     )
+        //     .as_arc(),
+        // ])
+        // .as_arc(),
+        Specular::new(ColorRGBA::new(0.9, 0.9, 0.9, 1.0), 60.0).as_arc(),
     ])
     .as_arc();
 
     let material_red = Phong::default()
         .with_diffuse(ColorRGBA::new(1.0, 0.5, 0.5, 1.0))
-        .with_shininess(30.0)
+        .with_shininess(60.0)
         .as_arc();
 
     // let scene = Sphere::new(Matrix4f::identity()).with_material(Arc::new(material));
 
     let scene = Scene::new(vec![
         Sphere::new(Matrix4f::identity())
-            .with_material(material)
+            .with_material(material.clone())
             .as_arc(),
         Sphere::new(Matrix4f::translate_raw(0.0, 1.0, 0.0))
             .with_material(material_red)
             .as_arc(),
+        Sphere::new(
+            Matrix4f::translate_raw(0.0, -2.0, 0.0)
+                * Matrix4f::scale_raw(100.0, 0.3, 100.0)
+                * Matrix4f::translate_raw(0.0, -1.0, 0.0),
+        )
+        .with_material(material.clone())
+        .as_arc(),
     ]);
 
     let lights = Lights::new(vec![
-        // Arc::new(PointLight::new(
+        // PointLight::new(
         //     Point::new(-10.0, 10.0, -10.0),
         //     ColorRGBA::new(1.0, 1.0, 1.0, 270.0), // The intensity should be the minimum distance to the scene squared
-        // )),
-        PointLight::new(
-            Point::new(-10.0, 10.0, -10.0),
-            ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
+        // )
+        // .as_arc(),
+        DirectionalLight::new(
+            Vector::new(1.0, -1.0, 1.0).normalize(),
+            ColorRGBA::new(1.0, 1.0, 1.0, 1.0), // The intensity should be the minimum distance to the scene squared
         )
         .as_arc(),
-        PointLight::new(
-            Point::new(10.0, 10.0, -10.0),
-            ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
-        )
-        .as_arc(),
+        // PointLight::new(
+        //     Point::new(-10.0, 10.0, -10.0),
+        //     ColorRGBA::new(1.0, 0.5, 1.0, 250.0), // The intensity should be the minimum distance to the scene squared
+        // )
+        // .as_arc(),
+        // PointLight::new(
+        //     Point::new(10.0, 10.0, -10.0),
+        //     ColorRGBA::new(1.0, 1.0, 0.5, 250.0), // The intensity should be the minimum distance to the scene squared
+        // )
+        // .as_arc(),
     ])
     .as_arc();
 
@@ -114,6 +127,12 @@ fn main() {
                     x,
                     y,
                     hit.object.get_material().render(hit, world_info.clone()),
+                    // default_palettes::full_bright::WHITE
+                    //     * (hit.world_pos - ray.origin).magnitude().log10()
+                    //     + default_palettes::full_bright::BLACK
+                    //         * (1.0 - (hit.world_pos - ray.origin).magnitude().log10()),
+                    // default_palettes::full_bright::WHITE * hit.t.log10()
+                    //     + default_palettes::full_bright::BLACK * (1.0 - hit.t.log10()),
                 );
             } else {
                 (*canv).set_color_at(x, y, default_palettes::full_bright::BLACK);
